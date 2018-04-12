@@ -16,6 +16,8 @@ public class Repository {
 
 	private static final String INSERT = "INSERT INTO Players(login, password) VALUES (?, ?)";
 	private static final String SELECT = "SELECT * FROM Players WHERE login LIKE ?";
+	private static final String UPDATE = "UPDATE Players SET points = ? WHERE login = ?";
+	private static final String DELETE = "DELETE FROM Players WHERE login = ?";
 	
 	private static final String COLUMN_LOGIN = "login";
 	private static final String COLUMN_PASSWORD = "password";
@@ -35,6 +37,8 @@ public class Repository {
 	 * 		true if Player saved in database, false otherwise
 	 */
 	public boolean savePlayer(Player player) {
+		if(player == null)
+			return false;
 		boolean isInserted = false;
 		
 		try(Connection connection = connector.getConnection(); 
@@ -71,6 +75,47 @@ public class Repository {
 			e.printStackTrace();
 		}
 		return Optional.ofNullable(player);
+	}
+	
+	/**
+	 * Update player points
+	 * @param points
+	 * 			must be greater than 0
+	 * @param login
+	 * 			must not be null
+	 */
+	public boolean updatePoints(int points, String login) {
+		if(points < 0 || login == null)
+			return false;
+		boolean isUpdated = false;
+		try(Connection connection = connector.getConnection();
+			PreparedStatement preparedStatement = connection.prepareStatement(UPDATE)) {
+			
+			preparedStatement.setInt(1, points);
+			preparedStatement.setString(2, login);
+			isUpdated = preparedStatement.executeUpdate() > 0 ? true : false;
+			
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		return isUpdated;
+	}
+	
+	/**
+	 * Delete player form database
+	 * @param login
+	 * 			must not be null
+	 */
+	public void deletePlayer(String login) {
+		try(Connection connection = connector.getConnection();
+			PreparedStatement preparedStatement = connection.prepareStatement(DELETE)) {
+			
+			preparedStatement.setString(1, login);
+			preparedStatement.executeUpdate();
+			
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private Player getPlayer(ResultSet resultSet) throws SQLException {

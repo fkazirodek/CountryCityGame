@@ -1,4 +1,4 @@
-package model;
+package model.words;
 
 public class City extends Word {
 

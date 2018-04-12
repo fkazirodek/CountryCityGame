@@ -1,4 +1,4 @@
-package model;
+package model.words;
 
 public class Animal extends Word {
 

@@ -9,7 +9,6 @@ import java.sql.SQLException;
  * 
  * @author Filip K.
  */
-
 public class MySQLConnector implements DBConnector {
 
 	private final static String DB_URL = "jdbc:mysql://localhost:3306/game?useSSL=false";

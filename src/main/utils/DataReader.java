@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import model.Animal;
-import model.City;
-import model.Country;
 import model.DataType;
 import model.Dictionary;
-import model.Name;
-import model.Word;
+import model.words.Animal;
+import model.words.City;
+import model.words.Country;
+import model.words.Name;
+import model.words.Word;
 
 /**
  * This class contains methods that allow you to read data from files and write them in the

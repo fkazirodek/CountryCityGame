@@ -3,6 +3,8 @@ package model;
 import java.util.HashSet;
 import java.util.Set;
 
+import model.words.Word;
+
 /**
  * This class stores all words and contains methods which operations on stored data
  * 

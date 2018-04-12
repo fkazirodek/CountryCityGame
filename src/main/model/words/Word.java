@@ -1,4 +1,4 @@
-package model;
+package model.words;
 
 /**
  * Main abstract superclass for all words class
