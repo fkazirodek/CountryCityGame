@@ -1,4 +1,4 @@
-package utils;
+package database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,7 +21,7 @@ public interface DBConnector {
 	Connection getConnection() throws SQLException, ClassNotFoundException;
 	
 	/**
-	 * Close connection
+	 * Close connection, only if you don't use try-with-resources statement
 	 * @throws SQLException
 	 */
 	void closeConnection() throws SQLException;

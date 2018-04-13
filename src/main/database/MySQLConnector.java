@@ -1,4 +1,4 @@
-package utils;
+package database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +13,7 @@ public class MySQLConnector implements DBConnector {
 
 	private final static String DB_URL = "jdbc:mysql://localhost:3306/game?useSSL=false";
 	private final static String DB_USER = "root";
-	private final static String DB_PASS = "******";
+	private final static String DB_PASS = "****";
 	private final static String DB_DRIVER = "com.mysql.jdbc.Driver";
 
 	private static Connection connection;

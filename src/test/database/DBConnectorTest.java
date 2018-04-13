@@ -1,4 +1,4 @@
-package utils;
+package database;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -7,6 +7,9 @@ import java.sql.SQLException;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import database.DBConnector;
+import database.MySQLConnector;
 
 public class DBConnectorTest {
 
