@@ -6,10 +6,10 @@ import static org.hamcrest.CoreMatchers.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import model.DataType;
-import model.Dictionary;
 import model.words.City;
 import model.words.Country;
+import model.words.DataType;
+import model.words.Dictionary;
 
 public class DataReaderTest {
 

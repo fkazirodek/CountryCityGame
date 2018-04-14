@@ -1,4 +1,4 @@
-package model;
+package model.word;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import model.words.City;
 import model.words.Country;
+import model.words.Dictionary;
 import model.words.Word;
 
 public class DictionaryTest {

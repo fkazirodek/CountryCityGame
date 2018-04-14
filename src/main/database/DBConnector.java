@@ -18,10 +18,10 @@ public interface DBConnector {
 	 * @throws ClassNotFoundException
 	 */
 
-	Connection getConnection() throws SQLException, ClassNotFoundException;
+	Connection getConnection() throws SQLException;
 	
 	/**
-	 * Close connection, only if you don't use try-with-resources statement
+	 * Close connections
 	 * @throws SQLException
 	 */
 	void closeConnection() throws SQLException;

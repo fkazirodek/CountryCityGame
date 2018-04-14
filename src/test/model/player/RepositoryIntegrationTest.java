@@ -1,17 +1,20 @@
-package database;
+package model.player;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import database.MySQLConnector;
 import exceptions.DuplicateKeyException;
-import model.Player;
+import model.player.Player;
+import model.player.Repository;
 
 public class RepositoryIntegrationTest {
 
@@ -24,13 +27,29 @@ public class RepositoryIntegrationTest {
 	
 	@Before
 	public void before() {
-		repository = new Repository(new MySQLConnector());
+		repository = new Repository(MySQLConnector.getInstance());
 		player = new Player(LOGIN, PASSWORD, 0);
 	}
 	
 	@After
 	public void after() {
 		repository.clean();
+	}
+	
+	@Test
+	public void findAllInOrder() {
+		Player playerN1 = new Player("login1", "pass", 0);
+		Player playerN2 = new Player("login2", "pass", 0);
+		repository.savePlayer(player);
+		repository.savePlayer(playerN2);
+		repository.savePlayer(playerN1);
+		
+		repository.updatePoints(10, "login1");
+		
+		List<Player> players = repository.findAll(2);
+		
+		assertEquals(2, players.size());
+		assertEquals(playerN1, players.get(0));
 	}
 	
 	@Test
@@ -42,7 +61,11 @@ public class RepositoryIntegrationTest {
 	@Test
 	public void shouldAddNewPlayer() {
 		boolean isSaved = repository.savePlayer(player);
+		Optional<Player> playerOpt = repository.findPlayer(LOGIN);
+		
 		assertTrue(isSaved);
+		assertTrue(playerOpt.isPresent());
+		assertEquals(player, playerOpt.get());
 	}
 	
 	@Test

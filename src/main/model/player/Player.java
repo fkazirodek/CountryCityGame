@@ -1,4 +1,4 @@
-package model;
+package model.player;
 
 public class Player {
 
@@ -10,6 +10,12 @@ public class Player {
 		this.login = login;
 	}
 
+	public Player(String login, String password) {
+		super();
+		this.login = login;
+		this.password = password;
+	}
+
 	public Player(String login, String password, int points) {
 		this.login = login;
 		this.password = password;
@@ -18,10 +24,6 @@ public class Player {
 
 	public String getLogin() {
 		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
 	}
 
 	public String getPassword() {
@@ -64,5 +66,9 @@ public class Player {
 			return false;
 		return true;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Player [login=" + login + ", password=" + password + ", points=" + points + "]";
+	}
 }

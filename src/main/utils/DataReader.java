@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import model.DataType;
-import model.Dictionary;
 import model.words.Animal;
 import model.words.City;
 import model.words.Country;
+import model.words.DataType;
+import model.words.Dictionary;
 import model.words.Name;
 import model.words.Word;
 
@@ -85,4 +85,5 @@ public class DataReader {
 			return null;
 		}
 	}
+
 }

@@ -18,11 +18,11 @@ public class DBConnectorTest {
 	
 	@Before
 	public void before() {
-		dbConnector = new MySQLConnector();
+		dbConnector = MySQLConnector.getInstance();
 	}
 	
 	@Test
-	public void connectionWasMade() throws ClassNotFoundException, SQLException {
+	public void connectToDatabase() throws ClassNotFoundException, SQLException {
 		connection = dbConnector.getConnection();
 		assertNotNull(connection);
 	}
