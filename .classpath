@@ -12,5 +12,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Filip/Downloads/mchange-commons-java-0.2.15.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Filip/Downloads/mockito-all-1.10.19.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

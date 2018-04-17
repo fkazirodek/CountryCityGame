@@ -1,11 +1,13 @@
 package model.player;
 
+import java.util.List;
+
 import exceptions.DuplicateKeyException;
 import exceptions.PlayerNotFoundException;
 
 /**
  * Service class
- * @author Filip
+ * @author Filip K.
  *
  */
 public class PlayerService {
@@ -60,10 +62,37 @@ public class PlayerService {
 		return repository.updatePoints(points, login);
 	}
 	
-	/* TODO
-	 * - add delete method
-	 * - add find all method
-	 * - test service
+	/**
+	 * Get player by login
+	 * @param login
+	 * @return
+	 * 		Player
+	 * @throws PlayerNotFoundException
 	 */
+	public Player getPlayer(String login) {
+		return repository
+				.findPlayer(login)
+				.orElseThrow(() -> new PlayerNotFoundException());
+	}
 	
+	/**
+	 * Get all players where the number of players is determined by the limit.
+	 * List of players is ordered by points desc.
+	 * @param limit
+	 * @return
+	 * 		List of players, may be empty
+	 * 		
+	 */
+	public List<Player> getAllPlayersLimit(int limit) {
+		return repository.findAll(limit);
+	}
+	
+	/**
+	 * Delete player
+	 * @param login
+	 * 			must not be null
+	 */
+	public void deletePlayer(String login) {
+		repository.deletePlayer(login);
+	}
 }
