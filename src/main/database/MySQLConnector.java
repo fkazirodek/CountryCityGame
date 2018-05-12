@@ -15,8 +15,8 @@ public class MySQLConnector implements DBConnector {
 
 	private final static String DB_URL = "jdbc:mysql://localhost:3306/game?useSSL=false";
 	private final static String DB_USER = "root";
-	private final static String DB_PASS = "****";
-	private final static String DB_DRIVER = "com.mysql.jdbc.Driver";
+	private final static String DB_PASS = "";
+	private final static String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
 
 	private static MySQLConnector mySQLConnector;
 	

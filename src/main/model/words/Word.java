@@ -48,6 +48,6 @@ public abstract class Word {
 
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + " name: " + value;
+		return this.getClass().getSimpleName() + ": " + value;
 	}
 }

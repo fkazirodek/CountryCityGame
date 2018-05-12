@@ -1,7 +1,14 @@
 package model.player;
 
-public class Player {
+import java.io.Serializable;
 
+public class Player implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private String login;
 	private String password;
 	private int points;
@@ -69,6 +76,6 @@ public class Player {
 
 	@Override
 	public String toString() {
-		return "Player [login=" + login + ", password=" + password + ", points=" + points + "]";
+		return login + " " + password + " " + points;
 	}
 }

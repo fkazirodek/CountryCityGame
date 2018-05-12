@@ -4,12 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import database.DBConnector;
 import exceptions.DuplicateKeyException;
@@ -18,7 +17,7 @@ import exceptions.DuplicateKeyException;
  * This repository class allows make CRUD operations on database
  * @author Filip K.
  */
-class Repository {
+public class Repository {
 	
 	
 	private static final String CREATE_TABLE = "CREATE TABLE `game`.`players` (\r\n" + 
@@ -78,7 +77,7 @@ class Repository {
 			preparedStatement.setString(2, player.getPassword());
 			isInserted = preparedStatement.executeUpdate() > 0 ? true : false;
 			
-		} catch (MySQLIntegrityConstraintViolationException e) {
+		} catch (SQLIntegrityConstraintViolationException e) {
 			throw new DuplicateKeyException(e.getMessage());
 		} catch (SQLException e) {
 			e.printStackTrace();
