@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import model.message.Message;
+import model.message.OperationType;
 import model.words.Animal;
 import model.words.City;
 import model.words.Country;
@@ -14,6 +15,11 @@ import model.words.Dictionary;
 import model.words.Name;
 import model.words.Word;
 
+/**
+ * This class is responsible for managing the state of the game, checking results and generating responses which contains game results.
+ * @author Filip
+ *
+ */
 public class GameLogic {
 
 	private static Set<Game> games = new HashSet<>();
@@ -23,6 +29,12 @@ public class GameLogic {
 		this.dictionary = dictionary;
 	}
 
+	/**
+	 * Creates a new game or looks for a game where the player waits for the opponent and joins it. 
+	 * The game may start if has 2 players.
+	 * @param message must constains sender
+	 * @return Message which contains recipient, oponents and random letter
+	 */
 	public Message joinToGame(Message message) {
 		Game game;
 		String player = message.getSender();
@@ -51,7 +63,7 @@ public class GameLogic {
 		}
 
 		if (game.getPlayerSize() == 2) {
-			message = new Message("GAME");
+			message = new Message(OperationType.GAME);
 			String player1 = game.getPlayer(0);
 			String player2 = game.getPlayer(1);
 			message.addValue("letter", game.getLetter().toString());
@@ -66,6 +78,12 @@ public class GameLogic {
 		return message;
 	}
 
+	/**
+	 * This method checks the sent words, counts the collected points and indicates the winner
+	 * @param message must contains sender and words to validate
+	 * @param action should update points for player
+	 * @return Message which contains game results
+	 */
 	public Message checkWordsAndGetWinner(Message message, BiConsumer<Integer, String> action) {
 		Map<String, String> values = message.getValues();
 
@@ -86,7 +104,7 @@ public class GameLogic {
 
 		while (!activeGame.isFinished()) {
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -94,7 +112,7 @@ public class GameLogic {
 		String player1 = activeGame.getPlayer(0);
 		String player2 = activeGame.getPlayer(1);
 
-		Message msg = new Message("RESULTS");
+		Message msg = new Message(OperationType.RESULTS);
 		if (sender.equals(player1))
 			message.addRecipient(player2);
 		else
@@ -103,6 +121,9 @@ public class GameLogic {
 		activeGame.getEntrySet().stream().forEach(e -> {
 			msg.addValue(e.getKey(), e.getValue().getResults().toString());
 		});
+		
+		msg.addValue("winner", activeGame.getWinner());
+		games.remove(activeGame);
 		return msg;
 	}
 

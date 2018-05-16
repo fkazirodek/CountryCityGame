@@ -9,6 +9,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
+/**
+ * This class stores players and their game results. 
+ * Class is also responsible for generating a random letter
+ * @author Filip
+ *
+ */
 public class Game {
 
 	private static AtomicLong atomicLong = new AtomicLong();
@@ -76,11 +82,23 @@ public class Game {
 		return results.entrySet();
 	}
 	
+	/**
+	 * The game is over if all players' answers are different than nulls
+	 * @return
+	 */
 	public boolean isFinished() {
 		return results
 					.entrySet()
 					.stream()
 					.allMatch(e -> e.getValue() != null);
+	}
+	
+	public String getWinner() {
+		String player_1 = getPlayer(0);
+		String player_2 = getPlayer(1);
+		Integer result_1 = Integer.valueOf(getResult(player_1).getValue("points"));
+		Integer result_2 = Integer.valueOf(getResult(player_2).getValue("points"));
+		return result_1 == result_2 ? "no winner" : (result_1 > result_2 ? player_1 : player_2);
 	}
 	
 	private static Character getRandomLetter() {

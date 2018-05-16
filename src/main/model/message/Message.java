@@ -6,6 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class stores all necessary data transferred between a client and server
+ * @author Filip
+ *
+ */
 public class Message implements Serializable {
 
 	/**
@@ -13,7 +18,7 @@ public class Message implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private String operation;
+	private OperationType operation;
 	private String sender;
 	private List<String> recipients;
 	private Map<String, String> values;
@@ -23,16 +28,16 @@ public class Message implements Serializable {
 		values = new HashMap<>();
 	}
 
-	public Message(String operation) {
+	public Message(OperationType operation) {
 		this();
 		this.operation = operation;
 	}
 
-	public String getOperation() {
+	public OperationType getOperation() {
 		return operation;
 	}
 
-	public void setOperation(String operation) {
+	public void setOperation(OperationType operation) {
 		this.operation = operation;
 	}
 
@@ -49,7 +54,10 @@ public class Message implements Serializable {
 	}
 
 	public String addValue(String key, String value) {
-		return values.put(key, value);
+		if(key != null)
+			return values.put(key, value);
+		else 
+			return null;
 	}
 
 	public void addRecipient(String recipient) {

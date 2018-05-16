@@ -3,6 +3,11 @@ package model.game;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Stores player's results
+ * @author Filip
+ *
+ */
 public class Result {
 
 	private String player;

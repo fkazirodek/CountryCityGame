@@ -49,7 +49,7 @@ public class Repository {
 	/**
 	 * This method creates a new table 'players' in the database, should invoked only once
 	 */
-	private void createTable() {
+	private void createTablePlayer() {
 		try(Connection connection = connector.getConnection();
 			Statement statement = connection.createStatement()) {		
 			statement.executeQuery(CREATE_TABLE);

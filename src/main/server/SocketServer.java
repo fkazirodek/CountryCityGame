@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 
 import database.MySQLConnector;
 import model.message.Message;
+import model.message.OperationType;
 import model.player.PlayerService;
 import model.player.Repository;
 import model.words.DataType;
@@ -80,7 +81,7 @@ public class SocketServer {
 	}
 
 	private static void initConversation(PrintWriter out) throws InterruptedException {
-		Message message = gameProtocol.processInput(new Message("START"), out);
+		Message message = gameProtocol.processInput(new Message(OperationType.START), out);
 		out.println(convertToJsonString(message));
 	}
 
