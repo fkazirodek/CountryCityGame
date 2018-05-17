@@ -9,6 +9,7 @@ public class Player implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private Long id;
 	private String login;
 	private String password;
 	private int points;
@@ -29,6 +30,14 @@ public class Player implements Serializable {
 		this.points = points;
 	}
 
+	public Long getId() {
+		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public String getLogin() {
 		return login;
 	}

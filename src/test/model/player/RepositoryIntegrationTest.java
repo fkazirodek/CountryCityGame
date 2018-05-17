@@ -14,39 +14,39 @@ import org.junit.Test;
 import database.MySQLConnector;
 import exceptions.DuplicateKeyException;
 import model.player.Player;
-import model.player.Repository;
+import model.player.PlayerRepository;
 
 public class RepositoryIntegrationTest {
 
 	private static final String LOGIN = "player1";
 	private static final String PASSWORD = "password";
 
-	private Repository repository;
+	private PlayerRepository playerRepository;
 	
 	private Player player;
 	
 	@Before
 	public void before() {
-		repository = new Repository(MySQLConnector.getInstance());
+		playerRepository = new PlayerRepository(MySQLConnector.getInstance());
 		player = new Player(LOGIN, PASSWORD, 0);
 	}
 	
 	@After
 	public void after() {
-		repository.clean();
+		playerRepository.clean();
 	}
 	
 	@Test
 	public void findAllInOrder() {
 		Player playerN1 = new Player("login1", "pass", 0);
 		Player playerN2 = new Player("login2", "pass", 0);
-		repository.savePlayer(player);
-		repository.savePlayer(playerN2);
-		repository.savePlayer(playerN1);
+		playerRepository.savePlayer(player);
+		playerRepository.savePlayer(playerN2);
+		playerRepository.savePlayer(playerN1);
 		
-		repository.updatePoints(10, "login1");
+		playerRepository.updatePoints(999, "login1");
 		
-		List<Player> players = repository.findAll(2);
+		List<Player> players = playerRepository.findAll(2);
 		
 		assertEquals(2, players.size());
 		assertEquals(playerN1, players.get(0));
@@ -54,14 +54,14 @@ public class RepositoryIntegrationTest {
 	
 	@Test
 	public void playerNotFoundIfWrongLogin() {
-		Optional<Player> playerOpt = repository.findPlayer("WrongLogin");
+		Optional<Player> playerOpt = playerRepository.findPlayer("WrongLogin");
 		assertFalse(playerOpt.isPresent());
 	}
 	
 	@Test
 	public void shouldAddNewPlayer() {
-		boolean isSaved = repository.savePlayer(player);
-		Optional<Player> playerOpt = repository.findPlayer(LOGIN);
+		boolean isSaved = playerRepository.savePlayer(player);
+		Optional<Player> playerOpt = playerRepository.findPlayer(LOGIN);
 		
 		assertTrue(isSaved);
 		assertTrue(playerOpt.isPresent());
@@ -70,14 +70,14 @@ public class RepositoryIntegrationTest {
 	
 	@Test
 	public void cannotAddIfPlayerNull() {
-		boolean isSaved = repository.savePlayer(null);
+		boolean isSaved = playerRepository.savePlayer(null);
 		assertFalse(isSaved);
 	}
 	
 	@Test(expected = DuplicateKeyException.class)
 	public void throwsExceptionIfDuplicateLogin() {
-		repository.savePlayer(player);
-		repository.savePlayer(player);
+		playerRepository.savePlayer(player);
+		playerRepository.savePlayer(player);
 	}
 	
 	@Test
@@ -85,9 +85,9 @@ public class RepositoryIntegrationTest {
 		boolean isUpdated = false;
 		int points = 10;
 		
-		repository.savePlayer(player);
-		isUpdated = repository.updatePoints(points, LOGIN);
-		Optional<Player> playerOpt = repository.findPlayer(LOGIN);
+		playerRepository.savePlayer(player);
+		isUpdated = playerRepository.updatePoints(points, LOGIN);
+		Optional<Player> playerOpt = playerRepository.findPlayer(LOGIN);
 		
 		assertTrue(playerOpt.isPresent());
 		assertEquals(points, playerOpt.get().getPoints());
@@ -99,17 +99,17 @@ public class RepositoryIntegrationTest {
 	public void cannotUpdatePointsIfNegative() {
 		boolean isUpdated = false;
 		
-		repository.savePlayer(player);
-		isUpdated = repository.updatePoints(-1, LOGIN);
+		playerRepository.savePlayer(player);
+		isUpdated = playerRepository.updatePoints(-1, LOGIN);
 		
 		assertFalse(isUpdated);
 	}
 	
 	@Test
 	public void shouldDeletePlayer() {
-		repository.savePlayer(player);
-		repository.deletePlayer(LOGIN);
-		Optional<Player> playerOpt = repository.findPlayer(LOGIN);
+		playerRepository.savePlayer(player);
+		playerRepository.deletePlayer(LOGIN);
+		Optional<Player> playerOpt = playerRepository.findPlayer(LOGIN);
 		
 		assertFalse(playerOpt.isPresent());
 	}

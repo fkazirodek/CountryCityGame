@@ -11,18 +11,20 @@ import model.message.Message;
 import model.message.OperationType;
 import model.player.Player;
 import model.player.PlayerService;
-import model.words.Dictionary;
+import model.words.WordService;
 
 public class GameProtocol {
 
 	private PlayerService playerService;
+	private WordService wordService;
 	private GameLogic gameLogic;
 
 	private static Map<String, PrintWriter> activeClients = new HashMap<>();
 	
-	public GameProtocol(PlayerService playerService, Dictionary dictionary) {
+	public GameProtocol(PlayerService playerService, WordService wordService) {
 		this.playerService = playerService;
-		gameLogic = new GameLogic(dictionary);
+		this.wordService = wordService;
+		gameLogic = new GameLogic(wordService);
 	}
 	
 	public Map<String, PrintWriter> getActiveClients() {
@@ -33,8 +35,8 @@ public class GameProtocol {
 		Map<String, String> values = message.getValues();
 		switch (message.getOperation()) {
 		case START:
-			message =  new Message();
-			message.getValues().put("Server", "Hello");
+			message = new Message();
+			message.addValue("Server", "Hello");
 			return message;
 		case REGISTER:
 			return register(values);
@@ -50,9 +52,21 @@ public class GameProtocol {
 			return gameLogic.joinToGame(message);
 		case WORDS:
 			return gameLogic.checkWordsAndGetWinner(message, playerService::addPoints);
+		case REPORT:
+			return report(message, values);
 		default:
 			return new Message(OperationType.ERROR);
 		}
+	}
+
+	private Message report(Message message, Map<String, String> values) {
+		boolean isReported = false;
+		String word = values.get("word");
+		long player_id = playerService.getPlayer(message.getSender()).getId();
+		isReported = wordService.saveReportedWord(word, player_id);
+		message = new Message(OperationType.REPORT);
+		message.addValue("reported", String.valueOf(isReported));
+		return message;
 	}
 
 	private Message getPlayer(Map<String, String> values) {

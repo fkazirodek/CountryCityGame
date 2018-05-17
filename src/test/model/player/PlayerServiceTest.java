@@ -22,7 +22,7 @@ public class PlayerServiceTest {
 	private static final String PASSWORD = "password";
 	
 	@Mock
-	private Repository repository;
+	private PlayerRepository playerRepository;
 	
 	private PlayerService playerService;
 	
@@ -31,14 +31,14 @@ public class PlayerServiceTest {
 	@Before
 	public void before() {
 		MockitoAnnotations.initMocks(this);
-		playerService = new PlayerService(repository);
+		playerService = new PlayerService(playerRepository);
 		
 		player = new Player(LOGIN, PASSWORD, 0);
 	}
 	
 	@Test
 	public void findPlayer() {
-		when(repository.findPlayer(LOGIN)).thenReturn(Optional.of(player));
+		when(playerRepository.findPlayer(LOGIN)).thenReturn(Optional.of(player));
 		
 		Player playerDB = playerService.getPlayer(LOGIN);
 		
@@ -47,13 +47,13 @@ public class PlayerServiceTest {
 	
 	@Test(expected = PlayerNotFoundException.class)
 	public void throwsExceptionWhenPlayerNotFound() {
-		when(repository.findPlayer(LOGIN)).thenReturn(Optional.empty());
+		when(playerRepository.findPlayer(LOGIN)).thenReturn(Optional.empty());
 		playerService.getPlayer(LOGIN);
 	}
 	
 	@Test
 	public void findAllPlayers() {
-		when(repository.findAll(2)).thenReturn(Collections.singletonList(new Player(LOGIN)));
+		when(playerRepository.findAll(2)).thenReturn(Collections.singletonList(new Player(LOGIN)));
 		
 		List<Player> players = playerService.getAllPlayersLimit(2);
 		
@@ -62,7 +62,7 @@ public class PlayerServiceTest {
 	
 	@Test
 	public void loginPlayerSuccessful() {
-		when(repository.findPlayer(LOGIN)).thenReturn(Optional.of(player));
+		when(playerRepository.findPlayer(LOGIN)).thenReturn(Optional.of(player));
 		
 		boolean isLogged = playerService.loginPlayer(LOGIN, PASSWORD);
 		
@@ -72,13 +72,13 @@ public class PlayerServiceTest {
 	@Test(expected = PlayerNotFoundException.class)
 	public void loginFailWhenWrongLogin() {
 		String wrongLogin = "wrong";
-		when(repository.findPlayer(wrongLogin)).thenReturn(Optional.empty());
+		when(playerRepository.findPlayer(wrongLogin)).thenReturn(Optional.empty());
 		playerService.loginPlayer(wrongLogin, PASSWORD);
 	}
 	
 	@Test
 	public void loginFailWhenWrongPassword() {
-		when(repository.findPlayer(LOGIN)).thenReturn(Optional.of(player));
+		when(playerRepository.findPlayer(LOGIN)).thenReturn(Optional.of(player));
 		
 		boolean isLogged = playerService.loginPlayer(LOGIN, "wrong password");
 		
@@ -87,7 +87,7 @@ public class PlayerServiceTest {
 	
 	@Test
 	public void registerPlayer() {
-		when(repository.savePlayer(player)).thenReturn(true);
+		when(playerRepository.savePlayer(player)).thenReturn(true);
 		
 		boolean isRegistered = playerService.registerPlayer(LOGIN, PASSWORD);
 		
@@ -96,7 +96,7 @@ public class PlayerServiceTest {
 	
 	@Test
 	public void addPoints() {
-		when(repository.updatePoints(10, LOGIN)).thenReturn(true);
+		when(playerRepository.updatePoints(10, LOGIN)).thenReturn(true);
 		
 		boolean isAdded = playerService.addPoints(10, LOGIN);
 		
@@ -105,7 +105,7 @@ public class PlayerServiceTest {
 	
 	@Test
 	public void addNegativPoints() {
-		when(repository.updatePoints(-10, LOGIN)).thenReturn(false);
+		when(playerRepository.updatePoints(-10, LOGIN)).thenReturn(false);
 		
 		boolean isAdded = playerService.addPoints(-10, LOGIN);
 		

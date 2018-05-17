@@ -13,9 +13,11 @@ import database.MySQLConnector;
 import model.message.Message;
 import model.message.OperationType;
 import model.player.PlayerService;
-import model.player.Repository;
+import model.player.PlayerRepository;
 import model.words.DataType;
 import model.words.Dictionary;
+import model.words.WordRepository;
+import model.words.WordService;
 import utils.DataReader;
 
 /**
@@ -29,7 +31,7 @@ import utils.DataReader;
 public class SocketServer {
 
 	private static PlayerService playerService;
-	private static Dictionary dictionary;
+	private static WordService wordService;
 	private static GameProtocol gameProtocol;
 
 	public static void main(String[] args) {
@@ -67,8 +69,7 @@ public class SocketServer {
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));) {
 
 			String inputLine;
-			
-			gameProtocol = new GameProtocol(playerService, dictionary);
+			gameProtocol = new GameProtocol(playerService, wordService);
 			initConversation(out);
 
 			while ((inputLine = in.readLine()) != null) {
@@ -123,13 +124,19 @@ public class SocketServer {
 	}
 
 	private static void initData() {
-		DataReader dataReader;
-		Repository repository;
-		dictionary = new Dictionary();
-		dataReader = new DataReader(dictionary);
+		PlayerRepository playerRepository = new PlayerRepository(MySQLConnector.getInstance());
+		WordRepository wordRepository = new WordRepository(MySQLConnector.getInstance());
+		Dictionary dictionary = new Dictionary();
+		readFile(dictionary);
+		playerService = new PlayerService(playerRepository);
+		wordService = new WordService(dictionary, wordRepository);
+		
+	}
+
+	private static void readFile(Dictionary dictionary) {
+		DataReader dataReader = new DataReader(dictionary);
 		dataReader.readDataFromFile("resources/Countries.txt", DataType.COUNTRY);
 		dataReader.readDataFromFile("resources/Cities.txt", DataType.CITY);
-		repository = new Repository(MySQLConnector.getInstance());
-		playerService = new PlayerService(repository);
+		dataReader.readDataFromFile("resources/Names.txt", DataType.NAME);
 	}
 }

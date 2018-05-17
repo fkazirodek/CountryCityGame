@@ -17,17 +17,7 @@ import exceptions.DuplicateKeyException;
  * This repository class allows make CRUD operations on database
  * @author Filip K.
  */
-public class Repository {
-	
-	
-	private static final String CREATE_TABLE = "CREATE TABLE `game`.`players` (\r\n" + 
-												"  `id` INT NOT NULL AUTO_INCREMENT,\r\n" + 
-												"  `login` VARCHAR(45) NOT NULL,\r\n" + 
-												"  `password` VARCHAR(45) NULL,\r\n" + 
-												"  `points` INT NULL,\r\n" + 
-												"  PRIMARY KEY (`id`, `login`),\r\n" + 
-												"  UNIQUE INDEX `id_UNIQUE` (`id` ASC),\r\n" + 
-												"  UNIQUE INDEX `login_UNIQUE` (`login` ASC));\r\n";
+public class PlayerRepository {
 
 	private static final String INSERT = "INSERT INTO players(login, password, points) VALUES (?, ?, 0)";
 	private static final String SELECT = "SELECT * FROM players WHERE login = ?";
@@ -42,20 +32,8 @@ public class Repository {
 	
 	private DBConnector connector;
 	
-	public Repository(DBConnector dbConnector) {
+	public PlayerRepository(DBConnector dbConnector) {
 		connector = dbConnector;
-	}
-	
-	/**
-	 * This method creates a new table 'players' in the database, should invoked only once
-	 */
-	private void createTablePlayer() {
-		try(Connection connection = connector.getConnection();
-			Statement statement = connection.createStatement()) {		
-			statement.executeQuery(CREATE_TABLE);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -187,10 +165,13 @@ public class Repository {
 	}
 
 	private Player getPlayer(ResultSet resultSet) throws SQLException {
+		long id = resultSet.getLong("id");
 		String login = resultSet.getString(COLUMN_LOGIN);
 		String password = resultSet.getString(COLUMN_PASSWORD);
 		int points = Integer.parseInt(resultSet.getString(COLUMN_POINTS));
-		return new Player(login, password, points);
+		Player player = new Player(login, password, points);
+		player.setId(id);
+		return player;
 	}
 	
 }

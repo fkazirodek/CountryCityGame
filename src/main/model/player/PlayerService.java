@@ -12,10 +12,10 @@ import exceptions.PlayerNotFoundException;
  */
 public class PlayerService {
 
-	private Repository repository;
+	private PlayerRepository playerRepository;
 	
-	public PlayerService(Repository repository) {
-		this.repository = repository;
+	public PlayerService(PlayerRepository playerRepository) {
+		this.playerRepository = playerRepository;
 	}
 	
 	/**
@@ -29,8 +29,8 @@ public class PlayerService {
 	 * @throws
 	 * 		PlayerNotFoundException
 	 */
-	public boolean loginPlayer(String login, String password) {
-		Player player = repository
+	public boolean loginPlayer(String login, String password) throws PlayerNotFoundException {
+		Player player = playerRepository
 							.findPlayer(login)
 							.orElseThrow(() -> new PlayerNotFoundException());
 		return player.getPassword().equals(password) ? true : false;
@@ -48,7 +48,7 @@ public class PlayerService {
 	 */
 	public boolean registerPlayer(String login, String password) throws DuplicateKeyException {
 		Player player = new Player(login, password);
-		return repository.savePlayer(player);
+		return playerRepository.savePlayer(player);
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class PlayerService {
 	 * 		true if points has been add, false otherwise
 	 */
 	public boolean addPoints(int points, String login) {
-		return repository.updatePoints(points, login);
+		return playerRepository.updatePoints(points, login);
 	}
 	
 	/**
@@ -69,8 +69,8 @@ public class PlayerService {
 	 * 		Player
 	 * @throws PlayerNotFoundException
 	 */
-	public Player getPlayer(String login) {
-		return repository
+	public Player getPlayer(String login) throws PlayerNotFoundException {
+		return playerRepository
 				.findPlayer(login)
 				.orElseThrow(() -> new PlayerNotFoundException());
 	}
@@ -84,7 +84,7 @@ public class PlayerService {
 	 * 		
 	 */
 	public List<Player> getAllPlayersLimit(int limit) {
-		return repository.findAll(limit);
+		return playerRepository.findAll(limit);
 	}
 	
 	/**
@@ -93,6 +93,6 @@ public class PlayerService {
 	 * 			must not be null
 	 */
 	public void deletePlayer(String login) {
-		repository.deletePlayer(login);
+		playerRepository.deletePlayer(login);
 	}
 }
