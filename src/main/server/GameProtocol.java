@@ -1,36 +1,54 @@
 package server;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import exceptions.DuplicateKeyException;
-import exceptions.PlayerNotFoundException;
-import model.game.GameLogic;
+import database.MySQLConnector;
+import model.game.GameService;
 import model.message.Message;
 import model.message.OperationType;
-import model.player.Player;
+import model.player.PlayerRepository;
 import model.player.PlayerService;
+import model.words.DataType;
+import model.words.Dictionary;
+import model.words.WordRepository;
 import model.words.WordService;
+import utils.DataReader;
 
+/**
+ * Class contains methods that allows process the messages, generate responses,
+ * and initiates data needed for the game (eg dictionary)
+ * 
+ * @author Filip
+ */
 public class GameProtocol {
 
-	private PlayerService playerService;
-	private WordService wordService;
-	private GameLogic gameLogic;
-
-	private static Map<String, PrintWriter> activeClients = new HashMap<>();
+	private static final Map<String, PrintWriter> activeClients = new ConcurrentHashMap<>();
 	
-	public GameProtocol(PlayerService playerService, WordService wordService) {
-		this.playerService = playerService;
-		this.wordService = wordService;
-		gameLogic = new GameLogic(wordService);
+	private static GameService gameService;
+	private static PlayerService playerService;
+	private static WordService wordService;
+	
+	public GameProtocol() {
+		initData();
+		gameService = new GameService(wordService, playerService);
 	}
 	
-	public Map<String, PrintWriter> getActiveClients() {
+	public static Map<String, PrintWriter> getActiveClients() {
 		return activeClients;
 	}
 
+	/**
+	 * This method is responsible for processing the received message. Message must
+	 * contains Map<String, String> of values (eg login, password, words etc)
+	 * 
+	 * @param message
+	 *            from the client
+	 * @param out
+	 *            client's text-output stream (PrintWriter)
+	 * @return Response message
+	 */
 	public Message processInput(Message message, PrintWriter out) {
 		Map<String, String> values = message.getValues();
 		switch (message.getOperation()) {
@@ -39,80 +57,41 @@ public class GameProtocol {
 			message.addValue("Server", "Hello");
 			return message;
 		case REGISTER:
-			return register(values);
+			return gameService.register(values);
 		case LOGIN:
-			return login(out, values);
+			return gameService.login(out, values);
 		case LOGOUT:
 			activeClients.remove(message.getSender());
 			message = new Message(OperationType.LOGOUT);
 			return message;
 		case GET_USER:
-			return getPlayer(values);
+			return gameService.getPlayer(values);
 		case PLAY:
-			return gameLogic.joinToGame(message);
+			return gameService.joinToGame(message);
 		case WORDS:
-			return gameLogic.checkWordsAndGetWinner(message, playerService::addPoints);
+			return gameService.checkWordsAndGetWinner(message);
 		case REPORT:
-			return report(message, values);
+			return gameService.reportWord(message, values);
 		default:
 			return new Message(OperationType.ERROR);
 		}
 	}
-
-	private Message report(Message message, Map<String, String> values) {
-		boolean isReported = false;
-		String word = values.get("word");
-		long player_id = playerService.getPlayer(message.getSender()).getId();
-		isReported = wordService.saveReportedWord(word, player_id);
-		message = new Message(OperationType.REPORT);
-		message.addValue("reported", String.valueOf(isReported));
-		return message;
+	
+	private static void initData() {
+		PlayerRepository playerRepository = new PlayerRepository(MySQLConnector.getInstance());
+		WordRepository wordRepository = new WordRepository(MySQLConnector.getInstance());
+		Dictionary dictionary = new Dictionary();
+		readFile(dictionary);
+		playerService = new PlayerService(playerRepository);
+		wordService = new WordService(dictionary, wordRepository);
+		
 	}
 
-	private Message getPlayer(Map<String, String> values) {
-		Message message;
-		Player player = null;
-		try {
-			player = playerService.getPlayer(values.get("login"));
-		} catch (PlayerNotFoundException e) {
-			message = new Message(OperationType.ERROR);
-			message.addValue("error", "player not found");
-			return message;
-		}
-		message = new Message(OperationType.OK);
-		message.addValue("login", player.getLogin());
-		message.addValue("points", String.valueOf(player.getPoints()));
-		return message;
-				
-	}
-
-	private Message login(PrintWriter out, Map<String, String> values) {
-		Message message;
-		String login = values.get("login");
-		String password = values.get("password");
-		boolean isLogged = playerService.loginPlayer(login, password);
-		if(isLogged)
-			activeClients.put(login, out);
-		message = new Message(OperationType.LOGIN);
-		message.addValue("logged", String.valueOf(isLogged));
-		return message;
-	}
-
-	private Message register(Map<String, String> values) {
-		Message message;
-		String login = values.get("login");
-		String password = values.get("password");
-		boolean isRegister = false;
-		try {
-			isRegister = playerService.registerPlayer(login, password);
-		} catch (DuplicateKeyException e) {
-			message = new Message(OperationType.ERROR);
-			message.addValue("error", "Duplicate login");
-			return message;
-		}
-		message = new Message(OperationType.REGISTER);
-		message.addValue("registered", String.valueOf(isRegister));
-		return message;
+	private static void readFile(Dictionary dictionary) {
+		DataReader dataReader = new DataReader(dictionary);
+		dataReader.readDataFromFile("resources/Countries.txt", DataType.COUNTRY);
+		dataReader.readDataFromFile("resources/Cities.txt", DataType.CITY);
+		dataReader.readDataFromFile("resources/Names.txt", DataType.NAME);
 	}
 	
 }
