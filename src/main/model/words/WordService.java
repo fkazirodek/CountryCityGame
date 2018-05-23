@@ -18,8 +18,9 @@ public class WordService {
 		dictionary.addNewWord(word);
 	}
 	
-	public boolean wordValidate(Word word) {
-		return dictionary.isWordExist(word);
+	public boolean validateWord(Word word, String letter) {
+		return dictionary.isWordExist(word)
+				&& word.getValue().toUpperCase().startsWith(letter);
 	}
 	
 	public int getNumberOfWords() {

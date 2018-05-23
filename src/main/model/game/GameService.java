@@ -42,6 +42,10 @@ public class GameService {
 		this.playerService = playerService;
 	}
 
+	public static Set<Game> getGames() {
+		return games;
+	}
+	
 	/**
 	 * Creates a new game or looks for a game where the player waits for the
 	 * opponent and joins it. The game may start if has 2 players.
@@ -217,15 +221,10 @@ public class GameService {
 		return listOfWords;
 	}
 
-	private boolean isWordCorrect(Word word, String letter) {
-		return wordService.wordValidate(word) 
-				&& word.getValue().toUpperCase().startsWith(letter);
-	}
-
 	private long calculatePoints(Character letter, List<Word> words) {
 		return words
 				.stream()
-				.filter(word -> isWordCorrect(word, letter.toString()))
+				.filter(word -> wordService.validateWord(word, letter.toString()))
 				.count();
 	}
 	
@@ -234,9 +233,9 @@ public class GameService {
 		result.setPlayer(player);
 		result.addValue("points", String.valueOf(points));
 		words.forEach(w -> {
-			if(w != null)
+			if(w.getValue() != null)
 				result.addValue(w.getValue(), 
-								String.valueOf(isWordCorrect(w, letter.toString()))
+								String.valueOf(wordService.validateWord(w, letter.toString()))
 								);
 		});
 		return result;

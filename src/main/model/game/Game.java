@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -23,10 +25,12 @@ public class Game {
 	private long id;
 	private Character letter;
 	private Map<String, Result> results;
+	private AtomicInteger countResults;
 	
 	public Game() {
 		id = atomicLong.getAndIncrement();
-		results = new HashMap<>();
+		results = new ConcurrentHashMap<>();
+		countResults = new AtomicInteger();
 		if(letters.isEmpty())
 			initLetters();
 		letter = getRandomLetter();
@@ -63,10 +67,11 @@ public class Game {
 	}
 
 	public Result addPlayer(String player) {
-		return results.put(player, null);
+		return results.put(player, new Result());
 	}
 	
 	public Result addResult(String player, Result result) {
+		countResults.incrementAndGet();
 		return results.put(player, result);
 	}
 	
@@ -83,14 +88,11 @@ public class Game {
 	}
 	
 	/**
-	 * The game is over if all players' answers are different than nulls
-	 * @return
+	 * The game is over if all players' answers are present
+	 * @return true if all players finished game, false otherwise
 	 */
 	public boolean isFinished() {
-		return results
-					.entrySet()
-					.stream()
-					.allMatch(e -> e.getValue() != null);
+		return countResults.get() == results.size();
 	}
 	
 	public String getWinner() {
