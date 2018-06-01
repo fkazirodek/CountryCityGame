@@ -1,30 +1,79 @@
 package application;
 	
+import client.Client;
+import controller.LoginController;
+import controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class Main extends Application {
 	
+	private Client client;
 	private Stage primaryStage;
+	private Stage loginStage;
+	
+	private MainController mainController;
 	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		initMainWindow();
+		client = new Client();
+		new Thread(client::start).start();
+		boolean isConnected = Boolean.parseBoolean(client.getServerResponse()
+															.getValues()
+															.get("connected"));
+		if(isConnected) {
+			initMainWindow();
+			showLoginWindow();
+		}
+	}
+	
+	public Client getClient() {
+		return client;
+	}
+	
+	public void hideLoginWindow() {
+		loginStage.hide();
 	}
 	
 	private void initMainWindow() {
-		FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/view/MainWindowView.fxml"));
-
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/MainWindowView.fxml"));
 		try {
 			BorderPane root = fxmlLoader.load();
-			Scene scene = new Scene(root,400,400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			Scene scene = new Scene(root,800,600);
+			scene.getStylesheets().add(getClass().getResource("../view/application.css").toExternalForm());
+			
+			mainController = fxmlLoader.getController();
+			mainController.setMain(this);
+			
 			primaryStage.setScene(scene);
 			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void showLoginWindow() {
+		loginStage = new Stage();
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/LoginWindowView.fxml"));
+		try {
+			AnchorPane anchorPane = fxmlLoader.load();
+			Scene scene = new Scene(anchorPane, 245, 275);
+			
+			LoginController loginController = fxmlLoader.getController();
+			loginController.setMain(this);
+			
+			loginStage.setOnHiding((e) -> mainController.initData());
+			
+			loginStage.setScene(scene);
+			loginStage.initOwner(primaryStage);
+			loginStage.initModality(Modality.APPLICATION_MODAL); 
+			loginStage.showAndWait();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

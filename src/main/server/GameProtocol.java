@@ -54,7 +54,7 @@ public class GameProtocol {
 		switch (message.getOperation()) {
 		case START:
 			message = new Message();
-			message.addValue("Server", "Hello");
+			message.addValue("connected", "true");
 			return message;
 		case REGISTER:
 			return gameService.register(values);
@@ -66,6 +66,10 @@ public class GameProtocol {
 			return message;
 		case GET_USER:
 			return gameService.getPlayer(values);
+		case GET_NUM_OF_LOGGED_USERS:
+			message = new Message();
+			message.addValue("numLogin", String.valueOf(activeClients.size()));
+			return message;
 		case PLAY:
 			return gameService.joinToGame(message);
 		case WORDS:

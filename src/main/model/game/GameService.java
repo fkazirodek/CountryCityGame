@@ -139,11 +139,17 @@ public class GameService {
 		Message message;
 		String login = values.get("login");
 		String password = values.get("password");
-		boolean isLogged = playerService.loginPlayer(login, password);
+		boolean isLogged = false;
+		try {
+			isLogged = playerService.loginPlayer(login, password);
+		} catch (PlayerNotFoundException e) {
+			Message errorMsg = new Message(OperationType.NOT_FOUND);
+			errorMsg.addValue("error", e.getMessage());
+		}
 		if(isLogged)
 			GameProtocol.getActiveClients().put(login, out);
 		message = new Message(OperationType.LOGIN);
-		message.addValue("logged", String.valueOf(isLogged));
+		message.addValue("login", String.valueOf(isLogged));
 		return message;
 	}
 
