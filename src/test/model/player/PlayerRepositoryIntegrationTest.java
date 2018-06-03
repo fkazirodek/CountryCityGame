@@ -16,7 +16,7 @@ import exceptions.DuplicateKeyException;
 import model.player.Player;
 import model.player.PlayerRepository;
 
-public class RepositoryIntegrationTest {
+public class PlayerRepositoryIntegrationTest {
 
 	private static final String LOGIN = "player1";
 	private static final String PASSWORD = "password";

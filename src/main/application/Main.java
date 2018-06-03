@@ -6,6 +6,8 @@ import controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -45,7 +47,7 @@ public class Main extends Application {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/MainWindowView.fxml"));
 		try {
 			BorderPane root = fxmlLoader.load();
-			Scene scene = new Scene(root,800,600);
+			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("../view/application.css").toExternalForm());
 			
 			mainController = fxmlLoader.getController();
@@ -63,7 +65,7 @@ public class Main extends Application {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/LoginWindowView.fxml"));
 		try {
 			AnchorPane anchorPane = fxmlLoader.load();
-			Scene scene = new Scene(anchorPane, 245, 275);
+			Scene scene = new Scene(anchorPane);
 			
 			LoginController loginController = fxmlLoader.getController();
 			loginController.setMain(this);
@@ -77,6 +79,13 @@ public class Main extends Application {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void showAlert(String title, String textMsg, AlertType alertType) {
+		Alert alert = new Alert(alertType);
+		alert.setTitle(title);
+		alert.setContentText(textMsg);
+		alert.show();
 	}
 	
 	public static void main(String[] args) {

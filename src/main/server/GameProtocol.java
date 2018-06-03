@@ -61,16 +61,12 @@ public class GameProtocol {
 		case LOGIN:
 			return gameService.login(out, values);
 		case LOGOUT:
-			activeClients.remove(message.getSender());
-			message = new Message(OperationType.LOGOUT);
-			return message;
+			return logoutPlayer(message);
 		case GET_USER:
 			return gameService.getPlayer(values);
 		case GET_NUM_OF_LOGGED_USERS:
-			message = new Message();
-			message.addValue("numLogin", String.valueOf(activeClients.size()));
-			return message;
-		case PLAY:
+			return getNumberOfLoggedPlayers();
+		case NEW_GAME:
 			return gameService.joinToGame(message);
 		case WORDS:
 			return gameService.checkWordsAndGetWinner(message);
@@ -79,6 +75,19 @@ public class GameProtocol {
 		default:
 			return new Message(OperationType.ERROR);
 		}
+	}
+
+	private Message getNumberOfLoggedPlayers() {
+		Message message = new Message();
+		message.addValue("numLogin", String.valueOf(activeClients.size()));
+		return message;
+	}
+
+	private Message logoutPlayer(Message message) {
+		PrintWriter removedKey = activeClients.remove(message.getSender());
+		message = new Message(OperationType.LOGOUT);
+		message.addValue("logout", removedKey == null ? "false" : "true");
+		return message;
 	}
 	
 	private static void initData() {

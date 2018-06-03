@@ -89,7 +89,7 @@ public class Game {
 	
 	/**
 	 * The game is over if all players' answers are present
-	 * @return true if all players finished game, false otherwise
+	 * @return true if all players finished the game, false otherwise
 	 */
 	public boolean isFinished() {
 		return countResults.get() == results.size();

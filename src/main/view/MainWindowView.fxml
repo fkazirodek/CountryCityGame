@@ -4,34 +4,35 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <top>
-      <HBox prefHeight="58.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="51.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="newGameBtn" mnemonicParsing="false" prefHeight="107.0" prefWidth="136.0" text="NOWA GRA">
+            <Button fx:id="newGameBtn" mnemonicParsing="false" onAction="#newGame" prefHeight="58.0" prefWidth="142.0" text="NOWA GRA">
                <font>
                   <Font name="System Bold Italic" size="18.0" />
                </font>
             </Button>
-            <Button fx:id="playerAccounBtn" mnemonicParsing="false" prefHeight="102.0" prefWidth="172.0" text="PROFIL GRACZA">
+            <Button fx:id="playerAccounBtn" mnemonicParsing="false" prefHeight="63.0" prefWidth="169.0" text="PROFIL GRACZA">
                <font>
                   <Font name="System Bold Italic" size="18.0" />
                </font>
             </Button>
-            <Label fx:id="welcomeLabel" alignment="CENTER" prefHeight="100.0" prefWidth="183.0" text="Witaj nieznajomy">
+            <Label fx:id="welcomeLabel" alignment="CENTER" prefHeight="58.0" prefWidth="192.0" text="Zalogowany jako nieznajomy">
                <font>
-                  <Font name="System Italic" size="18.0" />
+                  <Font name="System Italic" size="14.0" />
                </font>
             </Label>
             <Separator orientation="VERTICAL" prefHeight="58.0" prefWidth="20.0" />
-            <Label fx:id="infoLabel" prefHeight="100.0" prefWidth="206.0" text="Zalogowanych użytkowników: 0" />
-            <Button fx:id="logoutBtn" mnemonicParsing="false" prefHeight="106.0" prefWidth="107.0" text="WYLOGUJ">
+            <Label fx:id="infoLabel" prefHeight="58.0" prefWidth="186.0" text="Zalogowanych użytkowników: 0" />
+            <Button fx:id="logoutBtn" mnemonicParsing="false" prefHeight="58.0" prefWidth="105.0" text="WYLOGUJ">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -44,7 +45,7 @@
          <children>
             <Label alignment="CENTER" prefHeight="40.0" prefWidth="146.0" text="Czas">
                <font>
-                  <Font size="18.0" />
+                  <Font name="System Bold Italic" size="18.0" />
                </font>
             </Label>
             <Label fx:id="timerLabel" alignment="CENTER" prefHeight="40.0" prefWidth="152.0" text="00:00">
@@ -52,9 +53,19 @@
                   <Font size="14.0" />
                </font>
             </Label>
+            <Label alignment="CENTER" prefHeight="40.0" prefWidth="146.0" text="Litera">
+               <font>
+                  <Font name="System Bold Italic" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="letterLabel" alignment="CENTER" prefHeight="40.0" prefWidth="152.0" text="A">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
             <Label alignment="CENTER" prefHeight="40.0" prefWidth="181.0" text="Przeciwnik">
                <font>
-                  <Font size="18.0" />
+                  <Font name="System Bold Italic" size="18.0" />
                </font>
             </Label>
             <Label fx:id="opponentLabel" alignment="CENTER" prefHeight="40.0" prefWidth="176.0" text="abc">
@@ -77,4 +88,44 @@
          </children>
       </VBox>
    </right>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Separator layoutX="259.0" orientation="VERTICAL" prefHeight="542.0" prefWidth="0.0" />
+            <Label layoutX="14.0" layoutY="14.0" prefHeight="22.0" prefWidth="226.0" text="Ty">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="271.0" layoutY="17.0" prefHeight="17.0" prefWidth="218.0" text="Przeciwnik">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="36.0" prefHeight="30.0" prefWidth="70.0" text="Państwo" />
+            <TextField fx:id="countryTextField" layoutX="14.0" layoutY="63.0" prefHeight="25.0" prefWidth="190.0" />
+            <Label layoutX="14.0" layoutY="88.0" prefHeight="30.0" prefWidth="70.0" text="Miasto" />
+            <TextField fx:id="cityTextField" layoutX="14.0" layoutY="114.0" prefHeight="25.0" prefWidth="190.0" />
+            <Label layoutX="14.0" layoutY="139.0" prefHeight="30.0" prefWidth="70.0" text="Imię" />
+            <TextField fx:id="nameTextField" layoutX="14.0" layoutY="169.0" prefHeight="25.0" prefWidth="190.0" />
+            <Label layoutX="14.0" layoutY="194.0" prefHeight="30.0" prefWidth="70.0" text="Zwierzę" />
+            <TextField fx:id="animalTextField" layoutX="14.0" layoutY="224.0" prefHeight="25.0" prefWidth="190.0" />
+            <Button fx:id="sendAnswersBtn" disable="true" layoutX="14.0" layoutY="271.0" mnemonicParsing="false" onAction="#sendAnswers" text="Wyślij odpowiedzi" />
+            <Separator layoutY="309.0" prefHeight="3.0" prefWidth="259.0" />
+            <Separator layoutX="-1.0" layoutY="3.0" orientation="VERTICAL" prefHeight="538.0" prefWidth="7.0" />
+            <Label layoutX="14.0" layoutY="312.0" prefHeight="30.0" prefWidth="125.0" text="Poprawne odpowiedzi" />
+            <Label layoutX="14.0" layoutY="368.0" prefHeight="30.0" prefWidth="125.0" text="Zdobyte punkty" />
+            <Label fx:id="correctAnswerLabel" layoutX="169.0" layoutY="312.0" prefHeight="30.0" prefWidth="83.0" />
+            <Label fx:id="numberOfPointsLabel" layoutX="169.0" layoutY="368.0" prefHeight="30.0" prefWidth="83.0" />
+            <Label layoutX="271.0" layoutY="36.0" prefHeight="30.0" prefWidth="70.0" text="Państwo" />
+            <Label fx:id="opponentCountryLabel" layoutX="271.0" layoutY="61.0" prefHeight="25.0" prefWidth="181.0" />
+            <Label layoutX="271.0" layoutY="88.0" prefHeight="30.0" prefWidth="70.0" text="Miasto" />
+            <Label fx:id="opponentCityLabel" layoutX="271.0" layoutY="114.0" prefHeight="25.0" prefWidth="181.0" />
+            <Label layoutX="271.0" layoutY="139.0" prefHeight="30.0" prefWidth="70.0" text="Imię" />
+            <Label fx:id="opponentNameLabel" layoutX="271.0" layoutY="169.0" prefHeight="25.0" prefWidth="181.0" />
+            <Label layoutX="271.0" layoutY="194.0" prefHeight="30.0" prefWidth="70.0" text="Zwierzę" />
+            <Label fx:id="opponentAnimalLabel" layoutX="271.0" layoutY="224.0" prefHeight="25.0" prefWidth="181.0" />
+         </children>
+      </AnchorPane>
+   </center>
 </BorderPane>

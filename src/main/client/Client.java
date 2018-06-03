@@ -50,8 +50,8 @@ public class Client {
 		}
 	}
 
-	public synchronized void sendMessage(Message mesage) {
-		request = mesage;
+	public synchronized void sendMessage(Message message) {
+		request = message;
 		notifyAll();
 	}
 
