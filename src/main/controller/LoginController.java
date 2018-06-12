@@ -2,8 +2,8 @@ package controller;
 
 import java.util.Map;
 
-import application.Main;
 import client.Client;
+import client.Main;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;

@@ -1,6 +1,5 @@
-package application;
+package client;
 	
-import client.Client;
 import controller.LoginController;
 import controller.MainController;
 import javafx.application.Application;
@@ -44,7 +43,7 @@ public class Main extends Application {
 	}
 	
 	private void initMainWindow() {
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/MainWindowView.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/MainWindowView.fxml"));
 		try {
 			BorderPane root = fxmlLoader.load();
 			Scene scene = new Scene(root);
@@ -62,7 +61,7 @@ public class Main extends Application {
 	
 	public void showLoginWindow() {
 		loginStage = new Stage();
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/LoginWindowView.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/LoginWindowView.fxml"));
 		try {
 			AnchorPane anchorPane = fxmlLoader.load();
 			Scene scene = new Scene(anchorPane);

@@ -100,7 +100,7 @@ public class Game {
 		String player_2 = getPlayer(1);
 		Integer result_1 = Integer.valueOf(getResult(player_1).getValue("points"));
 		Integer result_2 = Integer.valueOf(getResult(player_2).getValue("points"));
-		return result_1 == result_2 ? "no winner" : (result_1 > result_2 ? player_1 : player_2);
+		return result_1 == result_2 ? "draw" : (result_1 > result_2 ? player_1 : player_2);
 	}
 	
 	private static Character getRandomLetter() {

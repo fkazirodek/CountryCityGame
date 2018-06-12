@@ -1,7 +1,7 @@
 package model.game;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Stores player's results
@@ -14,7 +14,7 @@ public class Result {
 	private Map<String, String> values;
 	
 	public Result() {
-		values = new HashMap<>();
+		values = new TreeMap<>();
 	}
 	
 	public String getPlayer() {

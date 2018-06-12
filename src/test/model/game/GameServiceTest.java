@@ -117,6 +117,7 @@ public class GameServiceTest {
 		assertEquals(PLAYER_2, response_1.getRecipient(0));
 		assertEquals(OperationType.RESULTS, response_2.getOperation());
 		assertEquals(PLAYER_1, response_2.getRecipient(0));
+		assertNotNull(response_1.getValues().get("winner"));
 	}
 	
 	

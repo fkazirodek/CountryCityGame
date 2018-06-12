@@ -240,7 +240,8 @@ public class GameService {
 		result.addValue("points", String.valueOf(points));
 		words.forEach(w -> {
 			if(w.getValue() != null)
-				result.addValue(w.getValue(), 
+				result.addValue(w.getClass().getSimpleName(), 
+								w.getValue() + ":" +
 								String.valueOf(wordService.validateWord(w, letter.toString()))
 								);
 		});
