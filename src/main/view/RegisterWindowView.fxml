@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="301.0" prefWidth="218.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="275.0" prefWidth="238.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
    <children>
-      <Label alignment="CENTER" contentDisplay="TOP" layoutX="34.0" layoutY="6.0" prefHeight="35.0" prefWidth="143.0" text="Logowanie">
+      <Label alignment="CENTER" contentDisplay="TOP" layoutX="34.0" layoutY="6.0" prefHeight="35.0" prefWidth="143.0" text="Rejestracja">
          <font>
             <Font size="24.0" />
          </font>
@@ -35,16 +34,15 @@
             <Font size="14.0" />
          </font>
       </TextField>
-      <Button layoutX="122.0" layoutY="252.0" mnemonicParsing="false" onAction="#login" prefHeight="35.0" prefWidth="82.0" text="Zaloguj">
+      <Button layoutX="121.0" layoutY="229.0" mnemonicParsing="false" onAction="#register" prefHeight="35.0" prefWidth="97.0" text="Zarejestruj">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Label fx:id="errorLabel" layoutX="14.0" layoutY="183.0" prefHeight="49.0" prefWidth="189.0" textFill="#fc0101">
+      <Label fx:id="errorLabel" layoutX="14.0" layoutY="183.0" prefHeight="46.0" prefWidth="189.0" textFill="#fc0101">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Hyperlink layoutX="14.0" layoutY="258.0" onAction="#showRegisterWindow" text="Zarejestruj konto" />
    </children>
 </AnchorPane>

@@ -72,6 +72,8 @@ public class GameProtocol {
 			return gameService.checkWordsAndGetWinner(message);
 		case REPORT:
 			return gameService.reportWord(message, values);
+		case GET_USERS:
+			return gameService.getPlayers(5);
 		default:
 			return new Message(OperationType.ERROR);
 		}

@@ -18,9 +18,9 @@ public class Client {
 	private static final int PORT_NUMBER = 4444;
 	
 	private volatile static Message request;
-	private volatile static Queue<Message> responses = new ConcurrentLinkedQueue<>();
+	private static Queue<Message> responses = new ConcurrentLinkedQueue<>();
 
-	public synchronized void start() {
+	public void start() {
 		try (Socket clientSocket = new Socket(HOST_NAME, PORT_NUMBER);
 				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
@@ -31,10 +31,7 @@ public class Client {
 			while ((fromServer = in.readLine()) != null) {
 				Gson gson = new Gson();
 				responses.add(gson.fromJson(fromServer, Message.class));
-				notifyAll();
-				while (request == null) {
-					wait();
-				}
+				waitUntil();
 				fromUser = gson.toJson(request);
 				out.println(fromUser);
 				request = null;
@@ -47,6 +44,13 @@ public class Client {
 			System.exit(1);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private synchronized void waitUntil() throws InterruptedException {
+		notifyAll();
+		while (request == null) {
+			wait();
 		}
 	}
 

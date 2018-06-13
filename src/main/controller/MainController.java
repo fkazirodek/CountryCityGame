@@ -1,37 +1,44 @@
 package controller;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 
 import client.Client;
 import client.Main;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
 import javafx.animation.RotateTransition;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+import model.game.Timer;
 import model.message.Message;
 import model.message.OperationType;
 import model.player.Player;
 
 public class MainController {
 
+	private static final String IMAGE_TROPHY_URL = "../view/images/trophy.png";
+	private static final String IMAGE_THUMB_DOWN_URL = "../view/images/thumb-down.png";
+	private static final String IMAGE_THUMB_UP_URL = "../view/images/thumb-up.png";
+	private static final String IMAGE_SILVER_MEDAL_URL = "../view/images/silver-medal.png";
+	
 	private Client client;
 	private Main main;
-	private AtomicInteger counter = new AtomicInteger(30);
-	private Timeline timeline;
 	private ExecutorService executorService;
-		
+	private Timer timer;	
+	private ObservableList<Player> players;
+	
 	@FXML
 	private Button newGameBtn;
 	@FXML
@@ -42,6 +49,8 @@ public class MainController {
 	private Button sendAnswersBtn;
 	@FXML
 	private ImageView refreshImageView;
+	@FXML
+	private ImageView refreshPlayerListImg;
 	@FXML
 	private Label timerLabel;
 	@FXML
@@ -96,64 +105,86 @@ public class MainController {
 	private ImageView winnerImg;
 	@FXML
 	private ImageView opponentWinnerImg;
+	@FXML
+	private TableView<Player> playersTableView;
+	@FXML
+	private TableColumn<Player, String> loginColumn;
+	@FXML
+	private TableColumn<Player, Integer> pointsColumn;
+	
+	public void initialize() {
+		timer = new Timer();
+		players = FXCollections.observableArrayList();
+		bindColumnWithData();
+	}
+	
+	public void initData() {
+		client = main.getClient();
+		executorService = main.getExecutorService();
+		setPlayerWindow();
+		setNumberOfLoggedUsers();
+		addPlayersToObservableList();
+	}
 	
 	public void setMain(Main main) {
 		this.main = main;
 	}
-
-	public void initData() {
-		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		client = main.getClient();
-		setPlayerWindow();
+	
+	@FXML
+	public void refreshLoggedUsers() {
+		rotateImg(refreshImageView);
 		setNumberOfLoggedUsers();
 	}
 	
 	@FXML
-	public void refreshLoggedUsers() {
-		RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), refreshImageView);
-		rotateTransition.setByAngle(180);
-		rotateTransition.play();
-		setNumberOfLoggedUsers();
+	public void refreshPlayerList() {
+		rotateImg(refreshPlayerListImg);
+		addPlayersToObservableList();
 	}
 	
 	@FXML
 	public void newGame() {
-		executorService.execute(() -> {
-			setDisableTextFields(false);
+		executorService.execute(() -> {	
+			newGameBtn.setDisable(true);
+			Platform.runLater(() -> main.showWaitingWindow());
+			
 			Message message = new Message(OperationType.NEW_GAME);
 			message.setSender(LoginController.getLoggedPlayer().getLogin());
 			client.sendMessage(message);
-
+			
 			Message response = client.getServerResponse();
+			Platform.runLater(() -> main.hideWaitingWindow());
 			Map<String, String> values = response.getValues();
-			sendAnswersBtn.setDisable(false);
+			
+			disablePlayerFieldsAndBtn(false);
 			
 			Platform.runLater(() -> {
+				clearOpponentWindow();
+				clearPlayerWindow();
 				opponentLabel.setText(values.get("opponent"));
 				letterLabel.setText(values.get("letter"));
 			});
 
-			startTimer();
-			waitUntil(() -> counter.get() >= 1);
+			timer.startTimer(timerLabel::setText);
+			waitUntil(() -> timer.getCounterValue() >= 1);
 			
-			sendAnswersBtn.setDisable(true);
 			Message serverResponse = sendAnswers();
 			setAnswers(serverResponse);
 			setOpponentAnswers(values, serverResponse);
 			setWinnerImg(serverResponse);
+			newGameBtn.setDisable(false);
 		});
 	}
 	
 	@FXML
 	public Message sendAnswers() {
-		counter.set(0);
-		sendAnswersBtn.setDisable(true);
+		timer.setNewCounerValue(0);
+		disablePlayerFieldsAndBtn(true);
 		Message message = new Message(OperationType.WORDS);
 		String country = countryTextField.getText();
 		String city = cityTextField.getText();
 		String name = nameTextField.getText();
 		String animal = animalTextField.getText();
-		setDisableTextFields(true);
 		message.setSender(LoginController.getLoggedPlayer().getLogin());
 		message.addValue("country", country);
 		message.addValue("city", city);
@@ -175,16 +206,16 @@ public class MainController {
 			boolean isCorrect = isCorrectAnswer(answerValues);
 			Platform.runLater(() -> {
 				if ("country".equalsIgnoreCase(key)) {
-					countryImg.setImage(new Image(getClass().getResource(isCorrect ? "../view/thumb-up.png" : "../view/thumb-down.png")
+					countryImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 															.toExternalForm()));
 				} else if ("city".equalsIgnoreCase(key)) {
-					cityImg.setImage(new Image(getClass().getResource(isCorrect ? "../view/thumb-up.png" : "../view/thumb-down.png")
+					cityImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 															.toExternalForm()));
 				} else if ("name".equalsIgnoreCase(key)) {
-					nameImg.setImage(new Image(getClass().getResource(isCorrect ? "../view/thumb-up.png" : "../view/thumb-down.png")
+					nameImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 															.toExternalForm()));
 				} else if ("animal".equalsIgnoreCase(key)) {
-					animalImg.setImage(new Image(getClass().getResource(isCorrect ? "../view/thumb-up.png" : "../view/thumb-down.png")
+					animalImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 															.toExternalForm()));
 				} else if ("points".equalsIgnoreCase(key)) {
 					pointsLabel.setText(specificAnswer);
@@ -201,29 +232,29 @@ public class MainController {
 			String[] pairs = answer.trim().split("=");
 			String key = pairs[0];
 			String[] answerValues = pairs[1].split(":");
-			String specificAnswer = answerValues[0];
-			
+			String value = answerValues[0];
 			boolean isCorrect = isCorrectAnswer(answerValues);
+			
 			Platform.runLater(() -> {
 				if ("country".equalsIgnoreCase(key)) {
-					opponentCountryLabel.setText(specificAnswer);
-					opponentCountryImg.setImage(new Image(getClass().getResource(isCorrect ? "../view/thumb-up.png" : "../view/thumb-down.png")
+					opponentCountryLabel.setText(value);
+					opponentCountryImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 																	.toExternalForm()));
 				} else if ("city".equalsIgnoreCase(key)) {
-					opponentCityLabel.setText(specificAnswer);
-					opponentCityImg.setImage(new Image(getClass().getResource(isCorrect ? "../view/thumb-up.png" : "../view/thumb-down.png")
+					opponentCityLabel.setText(value);
+					opponentCityImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 																	.toExternalForm()));
 				} else if ("name".equalsIgnoreCase(key)) {
-					opponentNameLabel.setText(specificAnswer);
-					opponentNameImg.setImage(new Image(getClass().getResource(isCorrect ? "../view/thumb-up.png" : "../view/thumb-down.png")
+					opponentNameLabel.setText(value);
+					opponentNameImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 																	.toExternalForm()));
 				} else if ("animal".equalsIgnoreCase(key)) {
-					opponentAnimalLabel.setText(specificAnswer);
-					opponentAnimalImg.setImage(new Image(getClass().getResource(isCorrect ? "../view/thumb-up.png" : "../view/thumb-down.png")
+					opponentAnimalLabel.setText(value);
+					opponentAnimalImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 																	.toExternalForm()));
 				} else if ("points".equalsIgnoreCase(key)) {
-					opponentPointsLabel.setText(specificAnswer);
-					opponentCorrectAnswerLabel.setText(specificAnswer + "/4");
+					opponentPointsLabel.setText(value);
+					opponentCorrectAnswerLabel.setText(value + "/4");
 				}
 			});
 		}
@@ -232,13 +263,28 @@ public class MainController {
 	private void setWinnerImg(Message serverResponse) {
 		String winner = serverResponse.getValues().get("winner");
 		if(LoginController.getLoggedPlayer().getLogin().equals(winner)) {
-			winnerImg.setImage(new Image(getClass().getResource("../view/trophy.png").toExternalForm()));
+			winnerImg.setImage(new Image(getClass().getResource(IMAGE_TROPHY_URL)
+													.toExternalForm()));
+			opponentWinnerImg.setImage(new Image(getClass().getResource(IMAGE_SILVER_MEDAL_URL)
+															.toExternalForm()));
 		} else if("draw".equals(winner)){
-			winnerImg.setImage(new Image(getClass().getResource("../view/trophy.png").toExternalForm()));
-			opponentWinnerImg.setImage(new Image(getClass().getResource("../view/trophy.png").toExternalForm()));
+			winnerImg.setImage(new Image(getClass().getResource(IMAGE_TROPHY_URL)
+													.toExternalForm()));
+			opponentWinnerImg.setImage(new Image(getClass().getResource(IMAGE_TROPHY_URL)
+															.toExternalForm()));
 		} else {
-			opponentWinnerImg.setImage(new Image(getClass().getResource("../view/trophy.png").toExternalForm()));
+			opponentWinnerImg.setImage(new Image(getClass().getResource(IMAGE_TROPHY_URL)
+															.toExternalForm()));
+			winnerImg.setImage(new Image(getClass().getResource(IMAGE_SILVER_MEDAL_URL)
+													.toExternalForm()));
 		}
+	}
+	
+
+	private void rotateImg(ImageView imageView) {
+		RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), imageView);
+		rotateTransition.setByAngle(360);
+		rotateTransition.play();
 	}
 	
 	private boolean isCorrectAnswer(String[] answerValues) {
@@ -247,45 +293,13 @@ public class MainController {
 			isCorrect = Boolean.parseBoolean(answerValues[1]);
 		return isCorrect;
 	}
-
-	private void startTimer() {
-		timeline = new Timeline(
-				new KeyFrame(Duration.seconds(1), 
-							 e -> {
-								 if (counter.get() == 0) {
-									 timeline.stop();
-									 counter.set(30);
-								 }
-								 timerLabel.setText(String.valueOf(counter.getAndDecrement()));
-							 })
-		);
-		timeline.setCycleCount(Animation.INDEFINITE);
-		timeline.play();
-	}
-	
-	private void waitUntil(BooleanSupplier booleanSupplier) {
-		while (booleanSupplier.getAsBoolean()) {
-			try {
-				Thread.sleep(100); // TODO better solution - wait(100)? not work becouse of exception
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	private void setDisableTextFields(boolean disbale) {
-		countryTextField.setDisable(disbale);
-		cityTextField.setDisable(disbale);
-		nameTextField.setDisable(disbale);
-		animalTextField.setDisable(disbale);
-	}
 	
 	private void setPlayerWindow() {
 		Player loggedPlayer = LoginController.getLoggedPlayer();
 		if (loggedPlayer != null) {
 			setLoggedUserWindow(loggedPlayer);
 		} else {
-			setUnknownUserWindow();
+			setUnloggedUserWindow();
 		}
 	}
 
@@ -302,20 +316,23 @@ public class MainController {
 															.getValues()
 															.get("logout"));
 			if(isLogout) {
-				setUnknownUserWindow();
+				setUnloggedUserWindow();
 				setNumberOfLoggedUsers();
 			}
 		});
 	}
 
-	private void setUnknownUserWindow() {
+	private void setUnloggedUserWindow() {
 		newGameBtn.setDisable(true);
 		playerAccounBtn.setDisable(true);
 		logoutBtn.setText("Zaloguj");
 		welcomeLabel.setText("Niezalogowany");
+		clearOpponentWindow();
+		clearPlayerWindow();
+		clearRightInfoWindow();
 		logoutBtn.setOnAction((e) -> main.showLoginWindow());
 	}
-
+	
 	private void setNumberOfLoggedUsers() {
 		Message mesage = new Message(OperationType.GET_NUM_OF_LOGGED_USERS);
 		client.sendMessage(mesage);
@@ -323,5 +340,76 @@ public class MainController {
 		int numberOfLoginUsers = Integer.parseInt(response.getValues().get("numLogin"));
 		infoLabel.setText("Zalogowanych użytkowników: " + numberOfLoginUsers);
 	}
+	
+	private void waitUntil(BooleanSupplier booleanSupplier) {
+		while (booleanSupplier.getAsBoolean()) {
+			try {
+				Thread.sleep(100); // TODO better solution - wait(100)? not work becouse of exception
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void disablePlayerFieldsAndBtn(boolean disable) {
+		countryTextField.setDisable(disable);
+		cityTextField.setDisable(disable);
+		nameTextField.setDisable(disable);
+		animalTextField.setDisable(disable);
+		sendAnswersBtn.setDisable(disable);
+	}
 
+	private void clearPlayerWindow() {
+		countryTextField.clear();
+		cityTextField.clear();
+		nameTextField.clear();
+		animalTextField.clear();
+		pointsLabel.setText("0");
+		correctAnswerLabel.setText("0/4");
+		countryImg.setImage(null);
+		cityImg.setImage(null);
+		nameImg.setImage(null);
+		animalImg.setImage(null);
+		winnerImg.setImage(null);
+	}
+	
+	private void clearOpponentWindow() {
+		opponentCountryLabel.setText("");
+		opponentCityLabel.setText("");
+		opponentNameLabel.setText("");
+		opponentAnimalLabel.setText("");
+		opponentPointsLabel.setText("0");
+		opponentCorrectAnswerLabel.setText("0/4");
+		opponentCountryImg.setImage(null);
+		opponentCityImg.setImage(null);
+		opponentNameImg.setImage(null);
+		opponentAnimalImg.setImage(null);
+		opponentWinnerImg.setImage(null);
+	}
+	
+	private void clearRightInfoWindow() {
+		timerLabel.setText("00:00");
+		letterLabel.setText("-");
+		opponentLabel.setText("-");
+	}
+	
+	private void bindColumnWithData() {
+		playersTableView.setItems(players);
+		loginColumn.setCellValueFactory(new PropertyValueFactory<>("login"));
+		pointsColumn.setCellValueFactory(new PropertyValueFactory<>("points"));
+	}
+	
+	public void addPlayersToObservableList() {
+		players.clear();
+		Message message = new Message(OperationType.GET_USERS);
+		client.sendMessage(message);
+		Message serverResponse = client.getServerResponse();
+		serverResponse.getValues().entrySet().forEach(e -> {
+			Player player = new Player(e.getKey());
+			player.setPoints(Integer.parseInt(e.getValue()));
+			players.add(player);
+		});
+		players.sort(Comparator.comparing(Player::getPoints)
+								.reversed());
+	}
 }

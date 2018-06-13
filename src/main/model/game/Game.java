@@ -125,16 +125,14 @@ public class Game {
 		letters.put(12, 'M');
 		letters.put(13, 'N');
 		letters.put(14, 'O');
-		letters.put(15, 'Ó');
-		letters.put(16, 'P');
-		letters.put(17, 'R');
-		letters.put(18, 'S');
-		letters.put(19, 'T');
-		letters.put(20, 'U');
-		letters.put(21, 'W');
-		letters.put(22, 'X');
-		letters.put(23, 'Y');
-		letters.put(24, 'Z');
+		letters.put(15, 'P');
+		letters.put(16, 'R');
+		letters.put(17, 'S');
+		letters.put(18, 'T');
+		letters.put(19, 'U');
+		letters.put(20, 'W');
+		letters.put(21, 'Y');
+		letters.put(22, 'Z');
 	}
 	
 	@Override

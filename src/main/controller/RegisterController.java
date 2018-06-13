@@ -10,14 +10,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import model.message.Message;
 import model.message.OperationType;
-import model.player.Player;
 
-public class LoginController {
+public class RegisterController {
 	
-	private static final String LOGIN_KEY = "login";
-	private static final String PASSWORD = "password";
-	
-	private static Player loggedPlayer;
 	private Client client;
 	
 	@FXML
@@ -34,36 +29,26 @@ public class LoginController {
 	public void setMain(Main main) {
 		this.main = main;
 	}
-	
-	public static Player getLoggedPlayer() {
-		return loggedPlayer;
-	}
-	
+
 	@FXML
-	public void login() {
+	public void register() {
 		client = main.getClient();
 		String login = loginTextField.getText();
 		String password = passwordField.getText();
 		
-		Message message = new Message(OperationType.LOGIN);
-		message.addValue(LOGIN_KEY, login);
-		message.addValue(PASSWORD, password);
+		Message message = new Message(OperationType.REGISTER);
+		message.addValue("login", login);
+		message.addValue("password", password);
 		main.getClient().sendMessage(message);
 		
 		Map<String, String> values = client.getServerResponse().getValues();
-		boolean isLogged = Boolean.parseBoolean(values.get(LOGIN_KEY));
-
-		if(isLogged) {
-			loggedPlayer = new Player(login, password);
-			main.hideLoginWindow();
+		boolean isRegistered = Boolean.parseBoolean(values.get("register"));
+		
+		if(isRegistered) {
+			main.hideRegisterWindow();
 		} else {
-			errorLabel.setText("Nie udało sie zalogować\n niepoprawe hasło lub login\n");
+			errorLabel.setText(values.get("error"));
 		}
-	}
-	
-	@FXML
-	public void showRegisterWindow() {
-		main.showRegisterWindow();
 	}
 
 }

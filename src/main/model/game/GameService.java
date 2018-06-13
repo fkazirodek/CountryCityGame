@@ -125,7 +125,20 @@ public class GameService {
 		message.addValue("login", player.getLogin());
 		message.addValue("points", String.valueOf(player.getPoints()));
 		return message;
-				
+	}
+	
+	/**
+	 * Retrive top players
+	 * @param limit of players to get
+	 * @return response message with top players
+	 */
+	public Message getPlayers(int limit) {
+		List<Player> players = playerService.getAllPlayersLimit(limit);
+		Message message = new Message(OperationType.RESULTS);
+		players.forEach(p -> {
+			message.addValue(p.getLogin(), String.valueOf(p.getPoints()));
+		});
+		return message;
 	}
 
 	/**
@@ -168,11 +181,11 @@ public class GameService {
 			isRegister = playerService.registerPlayer(login, password);
 		} catch (DuplicateKeyException e) {
 			message = new Message(OperationType.ERROR);
-			message.addValue("error", "Duplicate login");
+			message.addValue("error", "Gracz o tej nazwie istnieje\n wybierz inny login");
 			return message;
 		}
 		message = new Message(OperationType.REGISTER);
-		message.addValue("registered", String.valueOf(isRegister));
+		message.addValue("register", String.valueOf(isRegister));
 		return message;
 	}
 
