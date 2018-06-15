@@ -23,7 +23,7 @@ public class Game {
 	private static Map<Integer, Character> letters = new HashMap<>(); 
 	
 	private long id;
-	private Character letter;
+	private volatile Character letter;
 	private Map<String, Result> results;
 	private AtomicInteger countResults;
 	

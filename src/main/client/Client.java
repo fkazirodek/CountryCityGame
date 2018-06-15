@@ -14,10 +14,10 @@ import com.google.gson.Gson;
 import model.message.Message;
 
 public class Client {
-	private static final String HOST_NAME = "127.0.0.2";
+	private static final String HOST_NAME = "127.0.0.1";
 	private static final int PORT_NUMBER = 4444;
 	
-	private volatile static Message request;
+	private static Queue<Message> requests = new ConcurrentLinkedQueue<>();
 	private static Queue<Message> responses = new ConcurrentLinkedQueue<>();
 
 	public void start() {
@@ -32,9 +32,8 @@ public class Client {
 				Gson gson = new Gson();
 				responses.add(gson.fromJson(fromServer, Message.class));
 				waitUntil();
-				fromUser = gson.toJson(request);
+				fromUser = gson.toJson(requests.poll());
 				out.println(fromUser);
-				request = null;
 			}
 		} catch (UnknownHostException e) {
 			System.err.println("Don't know about host " + HOST_NAME);
@@ -49,13 +48,13 @@ public class Client {
 
 	private synchronized void waitUntil() throws InterruptedException {
 		notifyAll();
-		while (request == null) {
+		while (requests.isEmpty()) {
 			wait();
 		}
 	}
 
 	public synchronized void sendMessage(Message message) {
-		request = message;
+		requests.add(message);
 		notifyAll();
 	}
 
@@ -67,6 +66,7 @@ public class Client {
 				e.printStackTrace();
 			}
 		}
+		
 		return responses.poll();
 	}
 

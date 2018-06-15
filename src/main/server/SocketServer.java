@@ -66,7 +66,8 @@ public class SocketServer {
 			initConversation(out);
 
 			while ((inputLine = in.readLine()) != null) {
-				sendResponse(out, inputLine);
+				String inputMsg = inputLine;
+				executor.execute(() -> sendResponse(out, inputMsg));
 			}
 			socket.close();
 		} catch (InterruptedException e) {

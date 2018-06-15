@@ -53,11 +53,11 @@ public class Main extends Application {
 	}
 	
 	private void initMainWindow() {
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/MainWindowView.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/MainWindowView.fxml"));
 		try {
 			BorderPane root = fxmlLoader.load();
 			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("../view/application.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
 			
 			mainController = fxmlLoader.getController();
 			mainController.setMain(this);
@@ -76,7 +76,7 @@ public class Main extends Application {
 	
 	public void showLoginWindow() {
 		loginStage = new Stage();
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/LoginWindowView.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/LoginWindowView.fxml"));
 		try {
 			AnchorPane anchorPane = fxmlLoader.load();
 			Scene scene = new Scene(anchorPane);
@@ -97,7 +97,7 @@ public class Main extends Application {
 	
 	public void initRegisterWindow() {
 		registerStage = new Stage();
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/RegisterWindowView.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/RegisterWindowView.fxml"));
 		try {
 			AnchorPane anchorPane = fxmlLoader.load();
 			Scene scene = new Scene(anchorPane);
@@ -115,7 +115,7 @@ public class Main extends Application {
 	
 	public void initWaitingWindow() {
 		waitingStage = new Stage();
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/WaitingWindowView.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/WaitingWindowView.fxml"));
 		try {
 			AnchorPane anchorPane = fxmlLoader.load();
 			Scene scene = new Scene(anchorPane);

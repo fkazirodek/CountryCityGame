@@ -11,6 +11,7 @@ import javafx.animation.RotateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,10 +29,10 @@ import model.player.Player;
 
 public class MainController {
 
-	private static final String IMAGE_TROPHY_URL = "../view/images/trophy.png";
-	private static final String IMAGE_THUMB_DOWN_URL = "../view/images/thumb-down.png";
-	private static final String IMAGE_THUMB_UP_URL = "../view/images/thumb-up.png";
-	private static final String IMAGE_SILVER_MEDAL_URL = "../view/images/silver-medal.png";
+	private static final String IMAGE_TROPHY_URL = "/view/images/trophy.png";
+	private static final String IMAGE_THUMB_DOWN_URL = "/view/images/thumb-down.png";
+	private static final String IMAGE_THUMB_UP_URL = "/view/images/thumb-up.png";
+	private static final String IMAGE_SILVER_MEDAL_URL = "/view/images/silver-medal.png";
 	
 	private Client client;
 	private Main main;
@@ -104,6 +105,14 @@ public class MainController {
 	@FXML
 	private ImageView winnerImg;
 	@FXML
+	private ImageView reportCountryImg;
+	@FXML
+	private ImageView reportCityImg;
+	@FXML
+	private ImageView reportNameImg;
+	@FXML
+	private ImageView reportAnimalImg;
+	@FXML
 	private ImageView opponentWinnerImg;
 	@FXML
 	private TableView<Player> playersTableView;
@@ -124,6 +133,7 @@ public class MainController {
 		setPlayerWindow();
 		setNumberOfLoggedUsers();
 		addPlayersToObservableList();
+		disableImagesToReportWords(true);
 	}
 	
 	public void setMain(Main main) {
@@ -144,7 +154,9 @@ public class MainController {
 	
 	@FXML
 	public void newGame() {
-		executorService.execute(() -> {	
+		executorService.execute(() -> {
+			setVisibleImagesToReportWords(false);
+			disableImagesToReportWords(true);
 			newGameBtn.setDisable(true);
 			Platform.runLater(() -> main.showWaitingWindow());
 			
@@ -180,6 +192,47 @@ public class MainController {
 	public Message sendAnswers() {
 		timer.setNewCounerValue(0);
 		disablePlayerFieldsAndBtn(true);
+		Message message = createMessageWithAnswers();
+		client.sendMessage(message);
+		return client.getServerResponse();
+	}
+	
+	@FXML
+	public void reportWord(Event e) {
+		ImageView imageView = (ImageView) e.getSource();
+		String imageViewID = imageView.getId();
+		String word = null;
+		switch (imageViewID) {
+		case "reportCountryImg":
+			word = countryTextField.getText();
+			reportCountryImg.setDisable(true);
+			reportCountryImg.setVisible(false);
+			break;
+		case "reportCityImg":
+			word = cityTextField.getText();
+			reportCityImg.setDisable(true);
+			reportCityImg.setVisible(false);
+			break;
+		case "reportNameImg":
+			word = nameTextField.getText();
+			reportNameImg.setDisable(true);
+			reportNameImg.setVisible(false);
+			break;
+		case "reportAnimalImg":
+			word = animalTextField.getText();
+			reportAnimalImg.setDisable(true);
+			reportAnimalImg.setVisible(false);
+			break;
+		}
+
+		Message message = new Message(OperationType.REPORT);
+		message.setSender(LoginController.getLoggedPlayer().getLogin());
+		message.addValue("word", word);
+		client.sendMessage(message);
+		client.getServerResponse();
+	}
+	
+	private Message createMessageWithAnswers() {
 		Message message = new Message(OperationType.WORDS);
 		String country = countryTextField.getText();
 		String city = cityTextField.getText();
@@ -190,10 +243,9 @@ public class MainController {
 		message.addValue("city", city);
 		message.addValue("name", name);
 		message.addValue("animal", animal);
-		client.sendMessage(message);
-		return client.getServerResponse();
+		return message;
 	}
-
+	
 	public void setAnswers(Message serverResponse) {
 		String mapAsString = serverResponse.getValues().get(LoginController.getLoggedPlayer().getLogin());
 		String[] answers = mapAsString.substring(1, mapAsString.length()-1).split(",");
@@ -201,25 +253,33 @@ public class MainController {
 			String[] pairs = answer.trim().split("=");
 			String key = pairs[0];
 			String[] answerValues = pairs[1].split(":");
-			String specificAnswer = answerValues[0];
-
+			String value = answerValues[0];
 			boolean isCorrect = isCorrectAnswer(answerValues);
+			
 			Platform.runLater(() -> {
 				if ("country".equalsIgnoreCase(key)) {
 					countryImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 															.toExternalForm()));
+					reportCountryImg.setVisible(isCorrect ? false : true);
+					reportCountryImg.setDisable(isCorrect ? true : false);
 				} else if ("city".equalsIgnoreCase(key)) {
 					cityImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 															.toExternalForm()));
+					reportCityImg.setVisible(isCorrect ? false : true);
+					reportCityImg.setDisable(isCorrect ? true : false);
 				} else if ("name".equalsIgnoreCase(key)) {
 					nameImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 															.toExternalForm()));
+					reportNameImg.setVisible(isCorrect ? false : true);
+					reportNameImg.setDisable(isCorrect ? true : false);
 				} else if ("animal".equalsIgnoreCase(key)) {
 					animalImg.setImage(new Image(getClass().getResource(isCorrect ? IMAGE_THUMB_UP_URL : IMAGE_THUMB_DOWN_URL)
 															.toExternalForm()));
+					reportAnimalImg.setVisible(isCorrect ? false : true);
+					reportAnimalImg.setDisable(isCorrect ? true : false);
 				} else if ("points".equalsIgnoreCase(key)) {
-					pointsLabel.setText(specificAnswer);
-					correctAnswerLabel.setText(specificAnswer + "/4");
+					pointsLabel.setText(value);
+					correctAnswerLabel.setText(value + "/4");
 				}
 			});
 		}
@@ -260,6 +320,8 @@ public class MainController {
 		}
 	}
 	
+	
+	
 	private void setWinnerImg(Message serverResponse) {
 		String winner = serverResponse.getValues().get("winner");
 		if(LoginController.getLoggedPlayer().getLogin().equals(winner)) {
@@ -268,9 +330,9 @@ public class MainController {
 			opponentWinnerImg.setImage(new Image(getClass().getResource(IMAGE_SILVER_MEDAL_URL)
 															.toExternalForm()));
 		} else if("draw".equals(winner)){
-			winnerImg.setImage(new Image(getClass().getResource(IMAGE_TROPHY_URL)
+			winnerImg.setImage(new Image(getClass().getResource(IMAGE_SILVER_MEDAL_URL)
 													.toExternalForm()));
-			opponentWinnerImg.setImage(new Image(getClass().getResource(IMAGE_TROPHY_URL)
+			opponentWinnerImg.setImage(new Image(getClass().getResource(IMAGE_SILVER_MEDAL_URL)
 															.toExternalForm()));
 		} else {
 			opponentWinnerImg.setImage(new Image(getClass().getResource(IMAGE_TROPHY_URL)
@@ -292,6 +354,16 @@ public class MainController {
 		if (answerValues.length > 1)
 			isCorrect = Boolean.parseBoolean(answerValues[1]);
 		return isCorrect;
+	}
+	
+	private void waitUntil(BooleanSupplier booleanSupplier) {
+		while (booleanSupplier.getAsBoolean()) {
+			try {
+				Thread.sleep(100); // TODO better solution - wait(100)? not work becouse of exception
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void setPlayerWindow() {
@@ -341,14 +413,18 @@ public class MainController {
 		infoLabel.setText("Zalogowanych użytkowników: " + numberOfLoginUsers);
 	}
 	
-	private void waitUntil(BooleanSupplier booleanSupplier) {
-		while (booleanSupplier.getAsBoolean()) {
-			try {
-				Thread.sleep(100); // TODO better solution - wait(100)? not work becouse of exception
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+	private void disableImagesToReportWords(boolean disable) {
+		reportCountryImg.setDisable(disable);
+		reportCityImg.setDisable(disable);
+		reportNameImg.setDisable(disable);
+		reportAnimalImg.setDisable(disable);
+	}
+	
+	private void setVisibleImagesToReportWords(boolean visible) {
+		reportCountryImg.setVisible(visible);
+		reportCityImg.setVisible(visible);
+		reportNameImg.setVisible(visible);
+		reportAnimalImg.setVisible(visible);
 	}
 	
 	private void disablePlayerFieldsAndBtn(boolean disable) {

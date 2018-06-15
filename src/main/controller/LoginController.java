@@ -39,6 +39,10 @@ public class LoginController {
 		return loggedPlayer;
 	}
 	
+	public void logoutPlayer() {
+		loggedPlayer = null;
+	}
+	
 	@FXML
 	public void login() {
 		client = main.getClient();
