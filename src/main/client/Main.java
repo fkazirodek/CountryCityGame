@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 
 import controller.LoginController;
 import controller.MainController;
+import controller.PlayerAccountController;
 import controller.RegisterController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -24,8 +25,10 @@ public class Main extends Application {
 	private Stage loginStage;
 	private Stage registerStage;
 	private Stage waitingStage;
+	private Stage playerAccountStage;
 	
 	private MainController mainController;
+	private PlayerAccountController playerAccountController;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -41,6 +44,7 @@ public class Main extends Application {
 			showLoginWindow();
 			initRegisterWindow();
 			initWaitingWindow();
+			initPlayerAccountWindow();
 		}
 	}
 	
@@ -128,6 +132,24 @@ public class Main extends Application {
 		}
 	}
 	
+	public void initPlayerAccountWindow() {
+		playerAccountStage = new Stage();
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/PlayerAccountWindowView.fxml"));
+		try {
+			AnchorPane anchorPane = fxmlLoader.load();
+			Scene scene = new Scene(anchorPane);
+			
+			playerAccountController = fxmlLoader.getController();
+			playerAccountController.setClient(client);
+			
+			playerAccountStage.setScene(scene);
+			playerAccountStage.initOwner(primaryStage);
+			playerAccountStage.initModality(Modality.APPLICATION_MODAL); 
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void showAlert(String title, String textMsg, AlertType alertType) {
 		Alert alert = new Alert(alertType);
 		alert.setTitle(title);
@@ -141,6 +163,11 @@ public class Main extends Application {
 	
 	public void showWaitingWindow() {
 		waitingStage.showAndWait();
+	}
+	
+	public void showPlayerAccountWindow() {
+		playerAccountController.initData();
+		playerAccountStage.show();
 	}
 	
 	public void hideWaitingWindow() {

@@ -31,6 +31,17 @@ public class DBCreator {
 			"        ON DELETE CASCADE ON UPDATE CASCADE\r\n" + 
 			");";
 	
+	private static final String CREATE_TABLE_MATCHES = 
+			"CREATE TABLE games (\r\n" + 
+			"    id INT AUTO_INCREMENT PRIMARY KEY,\r\n" + 
+			"    winner_id INT,\r\n" + 
+			"    looser_id INT,\r\n" + 
+			"    FOREIGN KEY (winner_id)\r\n" + 
+			"        REFERENCES players (id),\r\n" + 
+			"    FOREIGN KEY (looser_id)\r\n" + 
+			"        REFERENCES players (id)\r\n" + 
+			");";
+	
 	private DBConnector connector;
 	
 	public DBCreator(DBConnector dbConnector) {
@@ -56,6 +67,18 @@ public class DBCreator {
 		try(Connection connection = connector.getConnection();
 			Statement statement = connection.createStatement()) {		
 			statement.executeQuery(CREATE_TABLE_REPORTED_WORDS);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * This method creates a new table 'matches' in the database
+	 */
+	public void createTableMatches() {
+		try(Connection connection = connector.getConnection();
+			Statement statement = connection.createStatement()) {		
+			statement.executeQuery(CREATE_TABLE_MATCHES);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

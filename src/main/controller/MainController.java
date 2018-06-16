@@ -232,6 +232,11 @@ public class MainController {
 		client.getServerResponse();
 	}
 	
+	@FXML
+	public void showAccountWindow() {
+		main.showPlayerAccountWindow();
+	}
+	
 	private Message createMessageWithAnswers() {
 		Message message = new Message(OperationType.WORDS);
 		String country = countryTextField.getText();

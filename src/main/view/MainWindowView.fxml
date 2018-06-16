@@ -26,7 +26,7 @@
                   <Font name="System Bold Italic" size="18.0" />
                </font>
             </Button>
-            <Button fx:id="playerAccounBtn" mnemonicParsing="false" prefHeight="63.0" prefWidth="169.0" text="PROFIL GRACZA">
+            <Button fx:id="playerAccounBtn" mnemonicParsing="false" onAction="#showAccountWindow" prefHeight="63.0" prefWidth="169.0" text="PROFIL GRACZA">
                <font>
                   <Font name="System Bold Italic" size="18.0" />
                </font>

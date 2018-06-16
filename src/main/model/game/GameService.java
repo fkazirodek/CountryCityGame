@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BooleanSupplier;
 
+import database.MySQLConnector;
 import exceptions.DuplicateKeyException;
 import exceptions.PlayerNotFoundException;
 import model.message.Message;
@@ -36,10 +37,12 @@ public class GameService {
 	private static final Set<Game> games = ConcurrentHashMap.newKeySet();
 	private WordService wordService;
 	private PlayerService playerService;
+	private GamesRepository gamesRepository;
 
 	public GameService(WordService wordService, PlayerService playerService) {
 		this.wordService = wordService;
 		this.playerService = playerService;
+		gamesRepository = new GamesRepository(MySQLConnector.getInstance());
 	}
 
 	public static Set<Game> getGames() {
@@ -83,6 +86,7 @@ public class GameService {
 		
 		waitUntil(() -> !activeGame.isFinished());
 
+		insertNewPlayedGame(activeGame);
 		games.remove(activeGame);
 		return createResponseWithResults(sender, activeGame);
 	}
@@ -196,6 +200,22 @@ public class GameService {
 					.get();
 	}
 	
+	/**
+	 * This method returned all played and won games played by one player
+	 * @param message with sender, must not be null
+	 * @return Message with number of played and won games
+	 */
+	public Message getPlayedGames(Message message) {
+		String login = message.getSender();
+		Player player = playerService.getPlayer(login);
+		int allPlayerGames = gamesRepository.getAllPlayerGames(player.getId());
+		int wonPlayerGames = gamesRepository.getWonPlayerGames(player.getId());
+		Message response = new Message();
+		response.addValue("allGames", String.valueOf(allPlayerGames));
+		response.addValue("wonGames", String.valueOf(wonPlayerGames));
+		return response;
+	}
+	
 	private synchronized void waitUntil(BooleanSupplier action) {
 		while (action.getAsBoolean()) {
 			try {
@@ -295,6 +315,15 @@ public class GameService {
 		
 		response.addValue("winner", activeGame.getWinner());
 		return response;
+	}
+	
+	private void insertNewPlayedGame(Game activeGame) {
+		String winnerLogin = activeGame.getWinner();
+		String looserLogin =  winnerLogin.equals(activeGame.getPlayer(0)) ? activeGame.getPlayer(1) : activeGame.getPlayer(0);
+		Player winner = playerService.getPlayer(winnerLogin);
+		Player looser = playerService.getPlayer(looserLogin);
+		
+		gamesRepository.saveGame(winner.getId(), looser.getId());
 	}
 	
 }
