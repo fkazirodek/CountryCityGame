@@ -15,7 +15,7 @@ public class DBCreator {
 			"CREATE TABLE `game`.`players` (\r\n" + 
 			"  `id` INT NOT NULL AUTO_INCREMENT,\r\n" + 
 			"  `login` VARCHAR(45) NOT NULL,\r\n" + 
-			"  `password` VARCHAR(45) NULL,\r\n" + 
+			"  `password` VARCHAR(45) NOT NULL,\r\n" + 
 			"  `points` INT NULL,\r\n" + 
 			"  PRIMARY KEY (`id`, `login`),\r\n" + 
 			"  UNIQUE INDEX `id_UNIQUE` (`id` ASC),\r\n" + 
@@ -31,16 +31,21 @@ public class DBCreator {
 			"        ON DELETE CASCADE ON UPDATE CASCADE\r\n" + 
 			");";
 	
-	private static final String CREATE_TABLE_MATCHES = 
+	private static final String CREATE_TABLE_GAMES = 
 			"CREATE TABLE games (\r\n" + 
 			"    id INT AUTO_INCREMENT PRIMARY KEY,\r\n" + 
-			"    winner_id INT,\r\n" + 
-			"    looser_id INT,\r\n" + 
-			"    FOREIGN KEY (winner_id)\r\n" + 
+			"    player_1 INT NOT NULL,\r\n" + 
+			"    player_2 INT NOT NULL,\r\n" + 
+			"    winner INT,\r\n" + 
+			"    FOREIGN KEY (player_1)\r\n" + 
 			"        REFERENCES players (id),\r\n" + 
-			"    FOREIGN KEY (looser_id)\r\n" + 
+			"    FOREIGN KEY (player_2)\r\n" + 
 			"        REFERENCES players (id)\r\n" + 
-			");";
+			")";
+	
+	private static final String DROP_TABLE_PLAYERS = "DROP TABLE IF EXISTS players";
+	private static final String DROP_TABLE_REPORTED_WORDS = "DROP TABLE IF EXISTS reported_words";
+	private static final String DROP_TABLE_GAMES = "DROP TABLE IF EXISTS games";
 	
 	private DBConnector connector;
 	
@@ -51,10 +56,10 @@ public class DBCreator {
 	/**
 	 * This method creates a new table 'players' in the database
 	 */
-	public void createTablePlayer() {
+	public void createTablePlayers() {
 		try(Connection connection = connector.getConnection();
 			Statement statement = connection.createStatement()) {		
-			statement.executeQuery(CREATE_TABLE_PLAYERS);
+			statement.execute(CREATE_TABLE_PLAYERS);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -66,7 +71,7 @@ public class DBCreator {
 	public void createTableReportedWords() {
 		try(Connection connection = connector.getConnection();
 			Statement statement = connection.createStatement()) {		
-			statement.executeQuery(CREATE_TABLE_REPORTED_WORDS);
+			statement.execute(CREATE_TABLE_REPORTED_WORDS);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -75,12 +80,45 @@ public class DBCreator {
 	/**
 	 * This method creates a new table 'matches' in the database
 	 */
-	public void createTableMatches() {
+	public void createTableGames() {
 		try(Connection connection = connector.getConnection();
 			Statement statement = connection.createStatement()) {		
-			statement.executeQuery(CREATE_TABLE_MATCHES);
+			statement.execute(CREATE_TABLE_GAMES);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	public void dropTables() {
+		try (Connection connection = connector.getConnection(); 
+			 Statement statement = connection.createStatement()) {
+			
+			statement.execute(DROP_TABLE_REPORTED_WORDS);
+			statement.execute(DROP_TABLE_GAMES);
+			statement.execute(DROP_TABLE_PLAYERS);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void dropTableReportedWords() {
+		try (Connection connection = connector.getConnection(); 
+			 Statement statement = connection.createStatement()) {
+			
+			statement.execute(DROP_TABLE_REPORTED_WORDS);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void dropTableGames() {
+		try (Connection connection = connector.getConnection(); 
+			 Statement statement = connection.createStatement()) {
+			
+			statement.execute(DROP_TABLE_GAMES);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

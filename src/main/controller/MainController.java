@@ -27,6 +27,11 @@ import model.message.Message;
 import model.message.OperationType;
 import model.player.Player;
 
+/**
+ * Main controller responsible for controlling the main application window. Here all operations from the main window take place.
+ * @author 
+ *
+ */
 public class MainController {
 
 	private static final String IMAGE_TROPHY_URL = "/view/images/trophy.png";
@@ -46,8 +51,6 @@ public class MainController {
 	private Button playerAccounBtn;
 	@FXML
 	private Button logoutBtn;
-	@FXML
-	private Button sendAnswersBtn;
 	@FXML
 	private ImageView refreshImageView;
 	@FXML
@@ -127,6 +130,9 @@ public class MainController {
 		bindColumnWithData();
 	}
 	
+	/**
+	 * Initiates data that will be displayed to the user in the main window
+	 */
 	public void initData() {
 		client = main.getClient();
 		executorService = main.getExecutorService();
@@ -140,18 +146,28 @@ public class MainController {
 		this.main = main;
 	}
 	
+	/**
+	 * Downloads the number of logged in users again and rotates the picture
+	 */
 	@FXML
 	public void refreshLoggedUsers() {
 		rotateImg(refreshImageView);
 		setNumberOfLoggedUsers();
 	}
 	
+	/**
+	 * Downloads and display top players in TableView 
+	 */
 	@FXML
 	public void refreshPlayerList() {
 		rotateImg(refreshPlayerListImg);
 		addPlayersToObservableList();
 	}
 	
+	/**
+	 * Method starts a new game, gets results after the time is finished, sends them to the server 
+	 * and displays the answer to user
+	 */
 	@FXML
 	public void newGame() {
 		executorService.execute(() -> {
@@ -179,7 +195,6 @@ public class MainController {
 
 			timer.startTimer(timerLabel::setText);
 			waitUntil(() -> timer.getCounterValue() >= 1);
-			
 			Message serverResponse = sendAnswers();
 			setAnswers(serverResponse);
 			setOpponentAnswers(values, serverResponse);
@@ -188,15 +203,11 @@ public class MainController {
 		});
 	}
 	
-	@FXML
-	public Message sendAnswers() {
-		timer.setNewCounerValue(0);
-		disablePlayerFieldsAndBtn(true);
-		Message message = createMessageWithAnswers();
-		client.sendMessage(message);
-		return client.getServerResponse();
-	}
-	
+	/**
+	 * Method is responsible for reporting words considered incorrect, 
+	 * after the user presses the button to submit the word
+	 * @param e event from view
+	 */
 	@FXML
 	public void reportWord(Event e) {
 		ImageView imageView = (ImageView) e.getSource();
@@ -224,12 +235,13 @@ public class MainController {
 			reportAnimalImg.setVisible(false);
 			break;
 		}
-
-		Message message = new Message(OperationType.REPORT);
-		message.setSender(LoginController.getLoggedPlayer().getLogin());
-		message.addValue("word", word);
-		client.sendMessage(message);
-		client.getServerResponse();
+		if(word != null && !word.isEmpty()) {
+			Message message = new Message(OperationType.REPORT);
+			message.setSender(LoginController.getLoggedPlayer().getLogin());
+			message.addValue("word", word);
+			client.sendMessage(message);
+			client.getServerResponse();
+		}
 	}
 	
 	@FXML
@@ -237,6 +249,21 @@ public class MainController {
 		main.showPlayerAccountWindow();
 	}
 	
+	/**
+	 * Send answers to server
+	 * @return server's response
+	 */
+	private Message sendAnswers() {
+		disablePlayerFieldsAndBtn(true);
+		Message message = createMessageWithAnswers();
+		client.sendMessage(message);
+		return client.getServerResponse();
+	}
+	
+	/**
+	 * Get answers as string from text fields and create message with answers  
+	 * @return request message
+	 */
 	private Message createMessageWithAnswers() {
 		Message message = new Message(OperationType.WORDS);
 		String country = countryTextField.getText();
@@ -251,7 +278,12 @@ public class MainController {
 		return message;
 	}
 	
-	public void setAnswers(Message serverResponse) {
+	/**
+	 * Sets the pictures depending on the correctness of the answer. 
+	 * If the answer is correct, the thumb-up image will be set, otherwise thumb-down will be set
+	 * @param serverResponse message with answer from server
+	 */
+	private void setAnswers(Message serverResponse) {
 		String mapAsString = serverResponse.getValues().get(LoginController.getLoggedPlayer().getLogin());
 		String[] answers = mapAsString.substring(1, mapAsString.length()-1).split(",");
 		for (String answer : answers) {
@@ -290,6 +322,13 @@ public class MainController {
 		}
 	}
 	
+	/**
+	 * 
+	 * Sets the pictures depending on the correctness of the answer and fill text label with opponent answers. 
+	 * If the answer is correct, the thumb-up image will be set, otherwise thumb-down will be set
+	 * @param values with opponent login as value
+	 * @param serverResponse message with answer from server
+	 */
 	private void setOpponentAnswers(Map<String, String> values, Message serverResponse) {
 		String mapAsString = serverResponse.getValues().get(values.get("opponent"));
 		String[] answers = mapAsString.substring(1, mapAsString.length()-1).split(",");
@@ -325,8 +364,6 @@ public class MainController {
 		}
 	}
 	
-	
-	
 	private void setWinnerImg(Message serverResponse) {
 		String winner = serverResponse.getValues().get("winner");
 		if(LoginController.getLoggedPlayer().getLogin().equals(winner)) {
@@ -347,7 +384,10 @@ public class MainController {
 		}
 	}
 	
-
+	/**
+	 * Rotates the image passed as a parameter
+	 * @param imageView
+	 */
 	private void rotateImg(ImageView imageView) {
 		RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), imageView);
 		rotateTransition.setByAngle(360);
@@ -371,6 +411,9 @@ public class MainController {
 		}
 	}
 	
+	/**
+	 * Display data in the main user window that depends on whether the user is logged in or not
+	 */
 	private void setPlayerWindow() {
 		Player loggedPlayer = LoginController.getLoggedPlayer();
 		if (loggedPlayer != null) {
@@ -410,6 +453,9 @@ public class MainController {
 		logoutBtn.setOnAction((e) -> main.showLoginWindow());
 	}
 	
+	/**
+	 * Get number of logged users from server and display them on main window
+	 */
 	private void setNumberOfLoggedUsers() {
 		Message mesage = new Message(OperationType.GET_NUM_OF_LOGGED_USERS);
 		client.sendMessage(mesage);
@@ -437,7 +483,6 @@ public class MainController {
 		cityTextField.setDisable(disable);
 		nameTextField.setDisable(disable);
 		animalTextField.setDisable(disable);
-		sendAnswersBtn.setDisable(disable);
 	}
 
 	private void clearPlayerWindow() {
@@ -480,7 +525,7 @@ public class MainController {
 		pointsColumn.setCellValueFactory(new PropertyValueFactory<>("points"));
 	}
 	
-	public void addPlayersToObservableList() {
+	private void addPlayersToObservableList() {
 		players.clear();
 		Message message = new Message(OperationType.GET_USERS);
 		client.sendMessage(message);

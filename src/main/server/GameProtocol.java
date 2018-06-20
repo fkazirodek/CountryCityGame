@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import database.DBCreator;
 import database.MySQLConnector;
 import model.game.GameService;
 import model.message.Message;
@@ -95,6 +96,7 @@ public class GameProtocol {
 	}
 	
 	private static void initData() {
+		//createTables();
 		PlayerRepository playerRepository = new PlayerRepository(MySQLConnector.getInstance());
 		WordRepository wordRepository = new WordRepository(MySQLConnector.getInstance());
 		Dictionary dictionary = new Dictionary();
@@ -102,6 +104,14 @@ public class GameProtocol {
 		playerService = new PlayerService(playerRepository);
 		wordService = new WordService(dictionary, wordRepository);
 		
+	}
+
+	private static void createTables() {
+		DBCreator dbCreator = new DBCreator(MySQLConnector.getInstance());
+		dbCreator.dropTables();
+		dbCreator.createTablePlayers();
+		dbCreator.createTableGames();
+		dbCreator.createTableReportedWords();
 	}
 
 	private static void readFile(Dictionary dictionary) {

@@ -17,6 +17,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+/**
+ * Main class responsible for initializing and showing windows. 
+ * In this class, the client is created where the connection to the server is initiated
+ * @author 
+ *
+ */
 public class Main extends Application {
 	
 	private ExecutorService executorService;
@@ -52,6 +58,11 @@ public class Main extends Application {
 		return client;
 	}
 	
+	/**
+	 * Get main execution service for whole client application. This execution service 
+	 * should be responsible for creating new threads in whole application
+	 * @return ExecutorService
+	 */
 	public ExecutorService getExecutorService() {
 		return executorService;
 	}

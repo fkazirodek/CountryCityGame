@@ -180,7 +180,6 @@
             <TextField fx:id="nameTextField" layoutX="14.0" layoutY="169.0" prefHeight="25.0" prefWidth="180.0" />
             <Label layoutX="14.0" layoutY="194.0" prefHeight="30.0" prefWidth="70.0" text="Zwierzę" />
             <TextField fx:id="animalTextField" layoutX="14.0" layoutY="224.0" prefHeight="25.0" prefWidth="180.0" />
-            <Button fx:id="sendAnswersBtn" disable="true" layoutX="14.0" layoutY="271.0" mnemonicParsing="false" onAction="#sendAnswers" text="Wyślij odpowiedzi" />
             <Separator layoutY="309.0" prefHeight="3.0" prefWidth="259.0" />
             <Separator layoutX="-1.0" layoutY="3.0" orientation="VERTICAL" prefHeight="538.0" prefWidth="7.0" />
             <Label layoutX="14.0" layoutY="312.0" prefHeight="30.0" prefWidth="125.0" text="Poprawne odpowiedzi" />

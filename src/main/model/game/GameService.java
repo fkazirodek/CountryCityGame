@@ -26,7 +26,7 @@ import server.GameProtocol;
 /**
  * This class is responsible for managing the state of the game, checking
  * results and generating responses which contains game results. Class also
- * allows login player, register new player and report word which is not
+ * allows player to log in, register new player and report word which is not
  * present in game's dictionary
  * 
  * @author Filip
@@ -87,7 +87,6 @@ public class GameService {
 		waitUntil(() -> !activeGame.isFinished());
 
 		insertNewPlayedGame(activeGame);
-		games.remove(activeGame);
 		return createResponseWithResults(sender, activeGame);
 	}
 
@@ -192,13 +191,6 @@ public class GameService {
 		message.addValue("register", String.valueOf(isRegister));
 		return message;
 	}
-
-	private Game getGameWithSpecificPlayer(String player) {
-		return games.stream()
-					.filter(g -> g.getPlayer(player) != null)
-					.findFirst()
-					.get();
-	}
 	
 	/**
 	 * This method returned all played and won games played by one player
@@ -208,12 +200,19 @@ public class GameService {
 	public Message getPlayedGames(Message message) {
 		String login = message.getSender();
 		Player player = playerService.getPlayer(login);
-		int allPlayerGames = gamesRepository.getAllPlayerGames(player.getId());
+		int allPlayerGames = gamesRepository.getAllPlayedGames(player.getId());
 		int wonPlayerGames = gamesRepository.getWonPlayerGames(player.getId());
 		Message response = new Message();
 		response.addValue("allGames", String.valueOf(allPlayerGames));
 		response.addValue("wonGames", String.valueOf(wonPlayerGames));
 		return response;
+	}
+	
+	private Game getGameWithSpecificPlayer(String player) {
+		return games.stream()
+					.filter(g -> g.containsPlayer(player))
+					.findFirst()
+					.get();
 	}
 	
 	private synchronized void waitUntil(BooleanSupplier action) {
@@ -317,13 +316,20 @@ public class GameService {
 		return response;
 	}
 	
-	private void insertNewPlayedGame(Game activeGame) {
-		String winnerLogin = activeGame.getWinner();
-		String looserLogin =  winnerLogin.equals(activeGame.getPlayer(0)) ? activeGame.getPlayer(1) : activeGame.getPlayer(0);
-		Player winner = playerService.getPlayer(winnerLogin);
-		Player looser = playerService.getPlayer(looserLogin);
-		
-		gamesRepository.saveGame(winner.getId(), looser.getId());
+	private synchronized void insertNewPlayedGame(Game activeGame) {
+		if (games.contains(activeGame)) {
+			games.remove(activeGame);
+			Player player_1 = playerService.getPlayer(activeGame.getPlayer(0));
+			Player player_2 = playerService.getPlayer(activeGame.getPlayer(1));
+			String winner = activeGame.getWinner();
+
+			if (player_1.getLogin().equals(winner))
+				gamesRepository.saveGame(player_1.getId(), player_2.getId(), player_1.getId());
+			else if (player_2.getLogin().equals(winner))
+				gamesRepository.saveGame(player_1.getId(), player_2.getId(), player_2.getId());
+			else
+				gamesRepository.saveGame(player_1.getId(), player_2.getId(), null);
+		}
 	}
 	
 }

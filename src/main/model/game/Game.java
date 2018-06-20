@@ -23,7 +23,7 @@ public class Game {
 	private static Map<Integer, Character> letters = new HashMap<>(); 
 	
 	private long id;
-	private volatile Character letter;
+	private Character letter;
 	private Map<String, Result> results;
 	private AtomicInteger countResults;
 	
@@ -40,7 +40,7 @@ public class Game {
 		return id;
 	}
 	
-	public Character getLetter() {
+	public synchronized Character getLetter() {
 		return letter;
 	}
 
@@ -60,6 +60,10 @@ public class Game {
 				.stream()
 				.filter(p -> p.equals(login))
 				.findFirst();
+	}
+	
+	public boolean containsPlayer(String login) {
+		return results.containsKey(login);
 	}
 	
 	public Result getResult(String player) {
@@ -103,13 +107,13 @@ public class Game {
 		return result_1 == result_2 ? "draw" : (result_1 > result_2 ? player_1 : player_2);
 	}
 	
-	private static Character getRandomLetter() {
+	private Character getRandomLetter() {
 		Random random = new Random();
 		int randomNum = random.nextInt(25);
 		return letters.get(randomNum);
 	}
 	
-	private static void initLetters() {
+	private void initLetters() {
 		letters.put(0, 'A');
 		letters.put(1, 'B');
 		letters.put(2, 'C');
