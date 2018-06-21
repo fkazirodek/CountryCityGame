@@ -8,6 +8,11 @@ import javafx.scene.control.Label;
 import model.message.Message;
 import model.message.OperationType;
 
+/**
+ * This is controller class for player account window
+ * @author 
+ *
+ */
 public class PlayerAccountController {
 	
 	private Client client;

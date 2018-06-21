@@ -12,6 +12,11 @@ import model.message.Message;
 import model.message.OperationType;
 import model.player.Player;
 
+/**
+ * This is controller class for login window. Class allows login player to game window.
+ * @author 
+ *
+ */
 public class LoginController {
 	
 	private static final String LOGIN_KEY = "login";

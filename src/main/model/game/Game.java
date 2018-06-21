@@ -109,7 +109,7 @@ public class Game {
 	
 	private Character getRandomLetter() {
 		Random random = new Random();
-		int randomNum = random.nextInt(25);
+		int randomNum = random.nextInt(23);
 		return letters.get(randomNum);
 	}
 	

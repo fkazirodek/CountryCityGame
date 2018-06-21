@@ -6,6 +6,11 @@ import java.sql.SQLException;
 
 import database.DBConnector;
 
+/**
+ * This class allows make operations on table 'reported_word'
+ * @author Filip
+ *
+ */
 public class WordRepository {
 
 	private static final String INSERT = "INSERT INTO reported_words(word, player_id) VALUES(?, ?)";
@@ -16,6 +21,12 @@ public class WordRepository {
 		this.connector = connector;
 	}
 	
+	/**
+	 * Save word reported by user
+	 * @param word reported
+	 * @param player_id which reported word
+	 * @return true if word reported successfully, false otherwise
+	 */
 	public boolean saveReportedWord(String word, long player_id) {
 		boolean isInserted = false;
 		try(Connection connection = connector.getConnection(); 

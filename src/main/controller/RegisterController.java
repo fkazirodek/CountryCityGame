@@ -11,6 +11,11 @@ import javafx.scene.control.TextField;
 import model.message.Message;
 import model.message.OperationType;
 
+/**
+ * This is controller class for register window. Class allows register new player.
+ * @author 
+ *
+ */
 public class RegisterController {
 	
 	private Client client;

@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import database.DBCreator;
 import database.MySQLConnector;
 import model.game.GameService;
+import model.game.GamesRepository;
 import model.message.Message;
 import model.message.OperationType;
 import model.player.PlayerRepository;
@@ -33,7 +34,9 @@ public class GameProtocol {
 	
 	public GameProtocol() {
 		initData();
-		gameService = new GameService(wordService, playerService);
+		gameService = new GameService(wordService, 
+									  playerService, 
+									  new GamesRepository(MySQLConnector.getInstance()));
 	}
 	
 	public static Map<String, PrintWriter> getActiveClients() {
@@ -96,7 +99,7 @@ public class GameProtocol {
 	}
 	
 	private static void initData() {
-		//createTables();
+		createTables();
 		PlayerRepository playerRepository = new PlayerRepository(MySQLConnector.getInstance());
 		WordRepository wordRepository = new WordRepository(MySQLConnector.getInstance());
 		Dictionary dictionary = new Dictionary();
@@ -119,6 +122,7 @@ public class GameProtocol {
 		dataReader.readDataFromFile("resources/Countries.txt", DataType.COUNTRY);
 		dataReader.readDataFromFile("resources/Cities.txt", DataType.CITY);
 		dataReader.readDataFromFile("resources/Names.txt", DataType.NAME);
+		dataReader.readDataFromFile("resources/Animals.txt", DataType.ANIMAL);
 	}
 	
 }

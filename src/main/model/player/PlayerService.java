@@ -6,7 +6,7 @@ import exceptions.DuplicateKeyException;
 import exceptions.PlayerNotFoundException;
 
 /**
- * Service class
+ * Service class that makes operations on players
  * @author Filip K.
  *
  */

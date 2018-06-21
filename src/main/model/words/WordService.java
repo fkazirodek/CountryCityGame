@@ -1,5 +1,10 @@
 package model.words;
 
+/**
+ * Service class that makes operations on words
+ * @author Filip
+ *
+ */
 public class WordService {
 
 	private Dictionary dictionary;

@@ -38,9 +38,11 @@ public class DBCreator {
 			"    player_2 INT NOT NULL,\r\n" + 
 			"    winner INT,\r\n" + 
 			"    FOREIGN KEY (player_1)\r\n" + 
-			"        REFERENCES players (id),\r\n" + 
+			"        REFERENCES players (id)\r\n" + 
+			"        ON DELETE CASCADE ON UPDATE CASCADE,\r\n" + 
 			"    FOREIGN KEY (player_2)\r\n" + 
 			"        REFERENCES players (id)\r\n" + 
+			"        ON DELETE CASCADE ON UPDATE CASCADE\r\n" + 
 			")";
 	
 	private static final String DROP_TABLE_PLAYERS = "DROP TABLE IF EXISTS players";

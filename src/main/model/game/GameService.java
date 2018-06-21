@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BooleanSupplier;
 
-import database.MySQLConnector;
 import exceptions.DuplicateKeyException;
 import exceptions.PlayerNotFoundException;
 import model.message.Message;
@@ -39,10 +38,10 @@ public class GameService {
 	private PlayerService playerService;
 	private GamesRepository gamesRepository;
 
-	public GameService(WordService wordService, PlayerService playerService) {
+	public GameService(WordService wordService, PlayerService playerService, GamesRepository gamesRepository) {
 		this.wordService = wordService;
 		this.playerService = playerService;
-		gamesRepository = new GamesRepository(MySQLConnector.getInstance());
+		this.gamesRepository = gamesRepository;
 	}
 
 	public static Set<Game> getGames() {

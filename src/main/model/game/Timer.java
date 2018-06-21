@@ -10,7 +10,7 @@ import javafx.util.Duration;
 
 /**
  * This Timer class is responsible for the countdown of time
- * @author 
+ * @author Filip
  *
  */
 public class Timer {
