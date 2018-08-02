@@ -13,7 +13,7 @@ import model.message.OperationType;
 
 /**
  * This is controller class for register window. Class allows register new player.
- * @author 
+ * @author Filip K.
  *
  */
 public class RegisterController {

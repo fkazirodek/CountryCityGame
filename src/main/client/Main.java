@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 /**
  * Main class responsible for initializing and showing windows. 
  * In this class, the client is created where the connection to the server is initiated
- * @author 
+ * @author Filip K.
  *
  */
 public class Main extends Application {

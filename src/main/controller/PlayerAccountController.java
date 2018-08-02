@@ -10,7 +10,7 @@ import model.message.OperationType;
 
 /**
  * This is controller class for player account window
- * @author 
+ * @author Filip K.
  *
  */
 public class PlayerAccountController {

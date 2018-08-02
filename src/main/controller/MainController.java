@@ -29,7 +29,7 @@ import model.player.Player;
 
 /**
  * Main controller responsible for controlling the main application window. Here all operations from the main window take place.
- * @author 
+ * @author Filip K.
  *
  */
 public class MainController {

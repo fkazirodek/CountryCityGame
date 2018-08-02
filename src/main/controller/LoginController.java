@@ -14,7 +14,7 @@ import model.player.Player;
 
 /**
  * This is controller class for login window. Class allows login player to game window.
- * @author 
+ * @author Filip K.
  *
  */
 public class LoginController {

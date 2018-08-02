@@ -16,7 +16,7 @@ import model.message.Message;
 /**
  * The class responsible for communication with the server, in particular for sending and receiving messages 
  * and managing the queue of messages
- * @author 
+ * @author Filip K.
  *
  */
 public class Client {

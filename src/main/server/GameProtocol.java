@@ -99,7 +99,7 @@ public class GameProtocol {
 	}
 	
 	private static void initData() {
-		createTables();
+		//createTables();
 		PlayerRepository playerRepository = new PlayerRepository(MySQLConnector.getInstance());
 		WordRepository wordRepository = new WordRepository(MySQLConnector.getInstance());
 		Dictionary dictionary = new Dictionary();
